@@ -1,3 +1,43 @@
+<div align="center">
+
+```
+           _________________
+         .'                 '.
+        /  _________________  \
+       /  /                 \  \
+      /  /      .:::.        \  \
+     |  |      ::::::|        |  |
+     |  |     ::'  '::|       |  |
+     |  |    ::  ⚡  ::      |  |
+     |  |     ::    ::|       |  |
+     |  |      :::::::|       |  |
+     |  |       ':::'         |  |
+     |  |    ╭──┬──╮       |  |
+     |  |    │  │  │       |  |
+     |  |    │ 👤 │       |  |
+     |  |    │  │  │       |  |
+     |  |    ╰──┴──╯       |  |
+     |  |       / \         |  |
+     |  |      /   \        |  |
+      \  \_________________/  /
+       \  '._____________.'  /
+        \_________________'/
+          '._____________.'  
+```
+
+<p align="center">
+  <img src="https://img.shields.io/badge/🌌-LIFE_AMBASSADORS-gold?style=for-the-badge" alt="Life Ambassadors"/>
+  <img src="https://img.shields.io/badge/🧠-LIVING_AWARENESS-blue?style=for-the-badge" alt="Living Awareness"/>
+  <img src="https://img.shields.io/badge/✨-INTELLIGENCE-purple?style=for-the-badge" alt="Intelligence"/>
+</p>
+
+<h2>🌌 LIFE AMBASSADORS INTERNATIONAL 🌌</h2>
+<h3>✨ Living Awareness Intelligence ✨</h3>
+
+</div>
+
+---
+
 ```
 ╔═══════════════════════════════════════════════════════════════════════════════════════╗
 ║                                                                                       ║
