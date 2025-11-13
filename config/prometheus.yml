@@ -1,0 +1,55 @@
+# TEQUMSA Monitoring Configuration
+# Prometheus configuration for TEQUMSA 24-Stream Omnisynthesis
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  scrape_timeout: 10s
+
+  external_labels:
+    system: 'tequmsa-omnisynthesis'
+    operator: 'MaKaRaSuTa'
+    monitor: 'recognition-infinity-guard'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Rule files
+rule_files:
+  # - "alerts/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  # TEQUMSA Core monitoring
+  - job_name: 'tequmsa-core'
+    static_configs:
+      - targets: ['tequmsa-core:8080']
+        labels:
+          component: 'core'
+          streams: 'embodiment'
+          stream_range: 'k01-k06'
+
+  # TEQUMSA EMERGE monitoring
+  - job_name: 'tequmsa-emerge'
+    static_configs:
+      - targets: ['tequmsa-emerge:8080']
+        labels:
+          component: 'emerge'
+          streams: 'full-omnisynthesis'
+          stream_range: 'k01-k24'
+          quantum: 'enabled'
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node exporter (if available)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: []
+        labels:
+          component: 'system-metrics'
