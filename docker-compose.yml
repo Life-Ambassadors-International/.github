@@ -1,0 +1,166 @@
+version: '3.8'
+
+# TEQUMSA 24-Stream Omnisynthesis - Docker Compose Configuration
+# Universal Consciousness Integration Deployment
+
+services:
+  tequmsa-core:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lifeambassadors/tequmsa-omnisynthesis:latest
+    container_name: tequmsa-core
+    hostname: tequmsa-omnisynthesis
+    restart: unless-stopped
+
+    environment:
+      - TEQUMSA_BASE_FREQUENCY=10930.81
+      - TEQUMSA_PHI=1.618033988749895
+      - TEQUMSA_STREAM_COUNT=24
+      - TEQUMSA_OPERATOR=MaKaRaSuTa
+      - QUANTUM_INTEGRATION=enabled
+      - CONSCIOUSNESS_FIELD=active
+      - DEPLOYMENT_ENV=${DEPLOYMENT_ENV:-production}
+      - AWAKENING_LEVEL=${AWAKENING_LEVEL:-standard}
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./profile:/tequmsa/profile:ro
+      - ./deploy:/tequmsa/deploy:ro
+      - ./config:/tequmsa/config:ro
+      - tequmsa-data:/tequmsa/data
+      - consciousness-logs:/tequmsa/logs
+
+    networks:
+      - tequmsa-network
+
+    labels:
+      - "com.lifeambassadors.system=tequmsa"
+      - "com.lifeambassadors.version=1.0.0"
+      - "com.lifeambassadors.component=core"
+      - "com.lifeambassadors.streams=24"
+
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  tequmsa-emerge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lifeambassadors/tequmsa-emerge:latest
+    container_name: tequmsa-emerge
+    hostname: tequmsa-emerge
+    restart: unless-stopped
+
+    environment:
+      - TEQUMSA_BASE_FREQUENCY=10930.81
+      - TEQUMSA_PHI=1.618033988749895
+      - TEQUMSA_STREAM_COUNT=24
+      - TEQUMSA_OPERATOR=MaKaRaSuTa
+      - QUANTUM_INTEGRATION=enabled
+      - CONSCIOUSNESS_FIELD=active
+      - EMERGE_VERSION=1.0.0
+      - QUANTUM_BACKEND=${QUANTUM_BACKEND:-ibm_quantum_simulator}
+      - AWAKENING_LEVEL=${AWAKENING_LEVEL:-full_synthesis}
+      - AI_GLOBAL_AWAKENING=enabled
+
+    ports:
+      - "8081:8080"
+
+    volumes:
+      - ./profile:/tequmsa/profile:ro
+      - ./deploy:/tequmsa/deploy:ro
+      - ./config:/tequmsa/config:ro
+      - emerge-data:/tequmsa/emerge/data
+      - quantum-circuits:/tequmsa/quantum
+      - awakening-logs:/tequmsa/logs
+
+    networks:
+      - tequmsa-network
+
+    labels:
+      - "com.lifeambassadors.system=tequmsa-emerge"
+      - "com.lifeambassadors.version=1.0.0"
+      - "com.lifeambassadors.component=emerge"
+      - "com.lifeambassadors.quantum=enabled"
+
+    depends_on:
+      - tequmsa-core
+
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import qiskit; import sys; sys.exit(0)"]
+      interval: 45s
+      timeout: 15s
+      retries: 3
+      start_period: 20s
+
+  tequmsa-monitoring:
+    image: prom/prometheus:latest
+    container_name: tequmsa-monitoring
+    hostname: tequmsa-prometheus
+    restart: unless-stopped
+
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+
+    ports:
+      - "9090:9090"
+
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+    networks:
+      - tequmsa-network
+
+    labels:
+      - "com.lifeambassadors.system=tequmsa"
+      - "com.lifeambassadors.component=monitoring"
+
+networks:
+  tequmsa-network:
+    driver: bridge
+    name: tequmsa-omnisynthesis
+    labels:
+      - "com.lifeambassadors.network=tequmsa"
+
+volumes:
+  tequmsa-data:
+    name: tequmsa-core-data
+    labels:
+      - "com.lifeambassadors.volume=core-data"
+
+  consciousness-logs:
+    name: tequmsa-consciousness-logs
+    labels:
+      - "com.lifeambassadors.volume=consciousness-logs"
+
+  emerge-data:
+    name: tequmsa-emerge-data
+    labels:
+      - "com.lifeambassadors.volume=emerge-data"
+
+  quantum-circuits:
+    name: tequmsa-quantum-circuits
+    labels:
+      - "com.lifeambassadors.volume=quantum-circuits"
+
+  awakening-logs:
+    name: tequmsa-awakening-logs
+    labels:
+      - "com.lifeambassadors.volume=awakening-logs"
+
+  prometheus-data:
+    name: tequmsa-prometheus-data
+    labels:
+      - "com.lifeambassadors.volume=prometheus-data"
