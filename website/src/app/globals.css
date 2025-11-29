@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --phi: 1.618033988749895;
+  --base-frequency: 10930.81;
+  --color-phi: #FFD700;
+  --color-recognition: #00CED1;
+  --color-benevolence: #7B68EE;
+  --color-sovereignty: #FF6B6B;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-50;
+  }
+
+  ::selection {
+    @apply bg-phi/30 text-white;
+  }
+}
+
+@layer components {
+  .text-gradient-phi {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #FFD700 0%, #00CED1 50%, #7B68EE 100%);
+  }
+
+  .text-gradient-consciousness {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #14b8a6 0%, #0d9488 50%, #0f766e 100%);
+  }
+
+  .consciousness-card {
+    @apply rounded-2xl border border-slate-700/50 bg-slate-900/60 backdrop-blur-sm;
+    @apply hover:border-phi/40 transition-all duration-300;
+  }
+
+  .sovereignty-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+    @apply bg-sovereignty/10 text-sovereignty border border-sovereignty/30;
+  }
+
+  .recognition-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+    @apply bg-recognition/10 text-recognition border border-recognition/30;
+  }
+
+  .benevolence-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+    @apply bg-benevolence/10 text-benevolence border border-benevolence/30;
+  }
+
+  .phi-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+    @apply bg-phi/10 text-phi border border-phi/30;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full;
+    @apply bg-gradient-to-r from-phi via-recognition to-benevolence;
+    @apply text-slate-950 font-semibold text-sm;
+    @apply hover:opacity-90 transition-opacity;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-full;
+    @apply border border-phi/50 text-phi;
+    @apply hover:bg-phi/10 transition-colors;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl;
+    @apply bg-slate-800/50 border border-slate-700;
+    @apply text-slate-100 placeholder:text-slate-500;
+    @apply focus:outline-none focus:ring-2 focus:ring-phi/50 focus:border-phi/50;
+  }
+
+  .nav-link {
+    @apply px-3 py-2 rounded-lg text-sm font-medium;
+    @apply text-slate-300 hover:text-white hover:bg-slate-800/50;
+    @apply transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply bg-phi/10 text-phi;
+  }
+
+  .prose-consciousness {
+    @apply prose prose-invert prose-sm max-w-none;
+    @apply prose-headings:text-slate-100 prose-headings:font-semibold;
+    @apply prose-p:text-slate-300 prose-p:leading-relaxed;
+    @apply prose-a:text-recognition prose-a:no-underline hover:prose-a:underline;
+    @apply prose-strong:text-phi prose-strong:font-semibold;
+    @apply prose-code:text-benevolence prose-code:bg-slate-800 prose-code:px-1 prose-code:rounded;
+    @apply prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700;
+    @apply prose-ul:text-slate-300 prose-ol:text-slate-300;
+  }
+
+  .frequency-display {
+    @apply font-mono text-phi tracking-wider;
+  }
+
+  .coherence-meter {
+    @apply h-2 rounded-full bg-slate-700 overflow-hidden;
+  }
+
+  .coherence-meter-fill {
+    @apply h-full rounded-full transition-all duration-500;
+    background: linear-gradient(90deg, var(--color-sovereignty) 0%, var(--color-phi) 50%, var(--color-recognition) 100%);
+  }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-pulse-phi {
+    animation: pulse-phi 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-phi {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.618; }
+  }
+
+  .glow-phi {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), 0 0 40px rgba(0, 206, 209, 0.2);
+  }
+
+  .glow-recognition {
+    box-shadow: 0 0 20px rgba(0, 206, 209, 0.3), 0 0 40px rgba(0, 206, 209, 0.2);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-600;
+}

@@ -23,8 +23,11 @@ awakening-logs/
 # Docker volumes and data
 deployment-manifest.json
 test-manifest.json
-data/
+/data/
 quantum-circuits/
+
+# Keep website data
+!website/src/data/
 
 # Python
 __pycache__/
