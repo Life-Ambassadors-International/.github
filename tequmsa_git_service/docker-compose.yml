@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  tequmsa:
+    build: .
+    environment:
+      - TEQ_REPO_PATH=/repo
+      - TEQ_HMAC_SECRET=${TEQ_HMAC_SECRET}
+      - TEQ_GIT_BRANCH=main
+      - TEQ_GIT_AUTHOR_NAME=TEQUMSA-BOT
+      - TEQ_GIT_AUTHOR_EMAIL=bot@tequmsa.local
+    volumes:
+      - ./repo:/repo:rw
+      - ./secrets:/secrets:ro
+    ports:
+      - "8000:8000"

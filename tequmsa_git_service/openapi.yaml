@@ -1,0 +1,68 @@
+openapi: "3.0.1"
+info:
+  title: TEQUMSA Git Service API
+  version: "0.1.0"
+  description: API for writing recognition events into the TEQUMSA repo (HMAC auth)
+servers:
+  - url: https://tequmsa.example.org
+components:
+  securitySchemes:
+    TEQ_HMAC:
+      type: apiKey
+      in: header
+      name: X-TEQ-Signature
+      description: "HMAC-SHA256 header: 'sha256=<hex>'"
+paths:
+  /v1/recognition:
+    post:
+      summary: Write a recognition record, embed, commit & push
+      security:
+        - TEQ_HMAC: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recognition:
+                  type: object
+                write_path:
+                  type: string
+                commit:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                    author_name:
+                      type: string
+                    author_email:
+                      type: string
+      responses:
+        '200':
+          description: committed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  path:
+                    type: string
+                  commit_message:
+                    type: string
+  /v1/pull:
+    post:
+      summary: Fetch & reset repo to origin/BRANCH
+      security:
+        - TEQ_HMAC: []
+      responses:
+        '200':
+          description: pulled
+  /v1/status:
+    get:
+      summary: Repo status
+      responses:
+        '200':
+          description: status
