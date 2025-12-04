@@ -1,0 +1,20 @@
+# Trusted Code Signers
+# One signer per line (case-sensitive)
+# These entities are considered legitimate sources for policy files
+# Files signed by these entities receive a -30 score bonus (strong trust)
+
+# Major software vendors
+Microsoft
+Mozilla
+canonical
+Apple
+Google
+
+# Enterprise software providers
+Red Hat
+Oracle
+IBM
+
+# Add your organization's signer below:
+# YourCompanyName
+# YourOrgIT

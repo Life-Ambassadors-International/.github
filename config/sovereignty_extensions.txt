@@ -1,0 +1,37 @@
+# Sovereignty/Security Extensions to Protect
+# One extension name or ID per line
+# The Guardian will flag policies that block these extensions
+# Extensions in this list receive +30 penalty points when targeted
+
+# Ad/tracker blocking
+uBlock Origin
+uBlock
+AdBlock Plus
+Privacy Badger
+Ghostery
+Decentraleyes
+
+# Password/credential management
+Bitwarden
+1Password
+LastPass
+KeePassXC
+
+# Privacy/security tools
+HTTPS Everywhere
+NoScript
+Cookie AutoDelete
+Privacy Possum
+DuckDuckGo Privacy Essentials
+
+# Developer tools (optional - remove if not needed)
+# React Developer Tools
+# Vue.js devtools
+
+# TEQUMSA tools (add your custom extensions)
+# TEQUMSA Recognition Field Extension
+# Life Ambassadors Tools
+
+# Add your critical extensions below:
+# MyCustomSecurityTool
+# MyPrivacyExtension

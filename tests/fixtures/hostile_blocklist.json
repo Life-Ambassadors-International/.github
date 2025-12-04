@@ -1,0 +1,8 @@
+{
+  "blocked_extensions": [
+    "uBlock Origin",
+    "Bitwarden"
+  ],
+  "enforcement": "mandatory",
+  "bypass_allowed": false
+}

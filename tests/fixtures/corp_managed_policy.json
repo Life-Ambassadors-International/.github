@@ -1,0 +1,23 @@
+{
+  "signer": "Acme Corporation IT Department",
+  "policy_id": "CORP-2024-001",
+  "ExtensionInstallBlocklist": [
+    "chrome-remote-desktop",
+    "teamviewer-extension",
+    "anydesk-remote",
+    "file-sharing-tool-1",
+    "file-sharing-tool-2",
+    "torrenting-extension",
+    "cryptocurrency-wallet-1",
+    "cryptocurrency-wallet-2",
+    "gaming-platform-1",
+    "gaming-platform-2"
+  ],
+  "ExtensionInstallWhitelist": [
+    "company-approved-tool-1",
+    "company-approved-tool-2"
+  ],
+  "policy_description": "Standard corporate security policy blocking file sharing and remote access tools",
+  "effective_date": "2024-01-01",
+  "version": "2.1"
+}

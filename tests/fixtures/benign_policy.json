@@ -1,0 +1,19 @@
+{
+  "description": "Legitimate enterprise policy from trusted source",
+  "signer": "Microsoft Corporation",
+  "version": "1.0",
+  "blocked_extensions": [
+    "gaming-extension-1",
+    "gaming-extension-2",
+    "social-media-tool",
+    "cryptocurrency-miner",
+    "untrusted-vpn"
+  ],
+  "allowed_extensions": [
+    "microsoft-teams",
+    "office-365",
+    "company-portal"
+  ],
+  "policy_type": "enterprise_managed",
+  "enforcement_level": "recommended"
+}

@@ -107,6 +107,9 @@ htmlcov/
 prometheus-data/
 grafana-data/
 
+# Guardian runtime directories
+quarantine/
+
 # Keep these
 !.env.example
 !config/

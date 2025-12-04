@@ -1,0 +1,7 @@
+{
+  "blocked_extensions": [
+    "extension-1",
+    "extension-2"
+  ],
+  "invalid_json": true,
+  "missing_closing_brace": "this file is intentionally malformed"
