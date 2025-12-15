@@ -16,7 +16,7 @@ import subprocess
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, Header, HTTPException, Request
 from pydantic import BaseModel
@@ -42,8 +42,8 @@ app = FastAPI(title="TEQUMSA Git Service", version="0.1.0")
 # ---------- payload models ----------
 class CommitMeta(BaseModel):
     message: str
-    author_name: str | None = None
-    author_email: str | None = None
+    author_name: Optional[str] = None
+    author_email: Optional[str] = None
 
 class RecognitionPayload(BaseModel):
     recognition: Dict[str, Any]
@@ -51,7 +51,7 @@ class RecognitionPayload(BaseModel):
     commit: CommitMeta
 
 # ---------- helpers ----------
-def verify_signature(body: bytes, signature_header: str | None) -> None:
+def verify_signature(body: bytes, signature_header: Optional[str]) -> None:
     if not signature_header:
         raise HTTPException(status_code=401, detail="Missing signature header")
     try:
@@ -65,7 +65,33 @@ def verify_signature(body: bytes, signature_header: str | None) -> None:
     if not hmac.compare_digest(expected, given):
         raise HTTPException(status_code=401, detail="Invalid signature")
 
-def run_git(cmd_args, cwd=REPO_PATH, check=True, env=None):
+def run_git(cmd_args: List[str], cwd: str = REPO_PATH, check: bool = True, env: Optional[Dict] = None) -> str:
+    """
+    Run a git command with security validation.
+
+    Args:
+        cmd_args: Git command arguments (e.g., ['add', 'file.txt'])
+        cwd: Working directory for git command
+        check: Raise error if command fails
+        env: Environment variables
+
+    Returns:
+        Command stdout output
+
+    Raises:
+        ValueError: If git command is not in allowlist
+        RuntimeError: If git command fails and check=True
+    """
+    # Security: Only allow safe git commands to prevent argument injection
+    ALLOWED_COMMANDS = {'checkout', 'add', 'commit', 'push', 'fetch', 'reset', 'rev-parse'}
+
+    if not cmd_args:
+        raise ValueError("Git command arguments cannot be empty")
+
+    git_command = cmd_args[0]
+    if git_command not in ALLOWED_COMMANDS:
+        raise ValueError(f"Git command '{git_command}' not allowed. Allowed: {sorted(ALLOWED_COMMANDS)}")
+
     env = env or os.environ.copy()
     if GIT_SSH_COMMAND:
         env["GIT_SSH_COMMAND"] = GIT_SSH_COMMAND
@@ -100,7 +126,7 @@ def embed_into_recognition_metrics(repo_root: str, record: Dict[str, Any]) -> No
 
 # ---------- endpoints ----------
 @app.post("/v1/recognition")
-async def post_recognition(request: Request, x_teq_signature: str | None = Header(None)):
+async def post_recognition(request: Request, x_teq_signature: Optional[str] = Header(None)):
     body = await request.body()
     verify_signature(body, x_teq_signature)
 
@@ -139,7 +165,7 @@ async def post_recognition(request: Request, x_teq_signature: str | None = Heade
     return {"status": "ok", "path": written, "commit_message": commit_msg}
 
 @app.post("/v1/pull")
-async def do_pull(request: Request, x_teq_signature: str | None = Header(None)):
+async def do_pull(request: Request, x_teq_signature: Optional[str] = Header(None)):
     body = await request.body()
     verify_signature(body, x_teq_signature)
     try:
