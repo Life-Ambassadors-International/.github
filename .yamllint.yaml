@@ -1,0 +1,50 @@
+# YAML Lint Configuration for Life Ambassadors International
+extends: default
+
+rules:
+  # Allow longer lines in YAML files
+  line-length:
+    max: 120
+    level: warning
+
+  # Allow multiple spaces after colons (for alignment)
+  colons:
+    max-spaces-after: -1
+
+  # Allow empty values
+  empty-values:
+    forbid-in-block-mappings: false
+    forbid-in-flow-mappings: false
+
+  # Document start marker (---) is optional
+  document-start:
+    present: false
+
+  # Allow multiple documents in one file
+  document-end: disable
+
+  # Indentation must be 2 spaces
+  indentation:
+    spaces: 2
+    indent-sequences: true
+
+  # Allow truthy values (yes/no, on/off)
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
+    check-keys: false
+
+  # Allow comments that don't start with space
+  comments:
+    min-spaces-from-content: 1
+
+  # Allow duplicate keys in certain contexts
+  key-duplicates: enable
+
+# Ignore certain files/patterns
+ignore: |
+  node_modules/
+  .git/
+  venv/
+  ENV/
+  env/
+  website/
