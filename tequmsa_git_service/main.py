@@ -25,9 +25,16 @@ from pydantic import BaseModel
 REPO_PATH = os.environ.get("TEQ_REPO_PATH", "/repo")  # mount your repo here
 GIT_AUTHOR_NAME = os.environ.get("TEQ_GIT_AUTHOR_NAME", "TEQUMSA Bot")
 GIT_AUTHOR_EMAIL = os.environ.get("TEQ_GIT_AUTHOR_EMAIL", "tequmsa-bot@example.org")
-HMAC_SECRET = os.environ.get("TEQ_HMAC_SECRET", "replace-with-strong-secret")
+HMAC_SECRET = os.environ.get("TEQ_HMAC_SECRET")
 BRANCH = os.environ.get("TEQ_GIT_BRANCH", "main")
 GIT_SSH_COMMAND = os.environ.get("GIT_SSH_COMMAND")  # optional: 'ssh -i /secrets/id_rsa -o StrictHostKeyChecking=no'
+
+# Validate HMAC secret is set and strong
+if not HMAC_SECRET or HMAC_SECRET == "replace-with-strong-secret":
+    raise ValueError(
+        "TEQ_HMAC_SECRET environment variable must be set to a strong secret value. "
+        "Generate one with: python3 -c 'import secrets; print(secrets.token_hex(32))'"
+    )
 
 # ---------- FastAPI app ----------
 app = FastAPI(title="TEQUMSA Git Service", version="0.1.0")
