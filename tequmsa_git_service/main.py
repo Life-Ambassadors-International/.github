@@ -56,7 +56,7 @@ def verify_signature(body: bytes, signature_header: Optional[str]) -> None:
         raise HTTPException(status_code=401, detail="Missing signature header")
     try:
         algo, given = signature_header.split("=", 1)
-    except Exception:
+    except ValueError:
         raise HTTPException(status_code=401, detail="Bad signature header format")
     if algo.lower() != "sha256":
         raise HTTPException(status_code=401, detail="Unsupported signature algorithm")
@@ -119,7 +119,7 @@ def embed_into_recognition_metrics(repo_root: str, record: Dict[str, Any]) -> No
         with open(metrics_path, "r") as f:
             try:
                 existing = json.load(f)
-            except Exception:
+            except json.JSONDecodeError:
                 existing = []
     existing.append(record)
     safe_write_json(repo_root, "data/recognition_metrics.json", existing)

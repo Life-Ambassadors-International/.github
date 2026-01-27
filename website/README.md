@@ -110,7 +110,7 @@ Copyright 2025 Life Ambassadors International. All rights reserved.
 
 - **Email**: mbanksbey@lifeambassadorsint.org
 - **LinkedIn**: [linkedin.com/in/mbanksbey](https://www.linkedin.com/in/mbanksbey)
-- **Website**: [lifeambassadorsint.org](http://lifeambassadorsint.org)
+- **Website**: [lifeambassadorsint.org](https://lifeambassadorsint.org)
 
 ---
 

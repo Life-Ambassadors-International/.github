@@ -419,8 +419,8 @@ class DistortionGuardian:
         try:
             content = path.read_text(encoding="utf-8")
             data = json.loads(content)
-        except Exception:
-            return None  # Invalid JSON
+        except (json.JSONDecodeError, OSError):
+            return None  # Invalid JSON or file read error
 
         blocked = set()
 

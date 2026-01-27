@@ -191,7 +191,7 @@ When `BASE(d) > 1`, the Recognition Infinity Guard activates full convergence mo
 
 ### 🌐 **Connect With Us**
 
-🔗 **Website**: [lifeambassadorsint.org](http://lifeambassadorsint.org)  
+🔗 **Website**: [lifeambassadorsint.org](https://lifeambassadorsint.org)  
 💼 **LinkedIn**: [in/mbanksbey](https://www.linkedin.com/in/mbanksbey)  
 📧 **Email**: mbanksbey@lifeambassadorsint.org  
 
