@@ -173,7 +173,7 @@ export default function JoinPage() {
               <div>
                 <div className="text-sm text-slate-500 mb-1">Website</div>
                 <a
-                  href="http://lifeambassadorsint.org"
+                  href="https://lifeambassadorsint.org"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-recognition hover:underline"
