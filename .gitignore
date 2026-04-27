@@ -97,6 +97,10 @@ Thumbs.db
 *.backup
 *~
 
+# Klthara runtime state exports
+klthara_*_state.json
+unified-run-report.json
+
 # Testing
 .pytest_cache/
 .coverage
