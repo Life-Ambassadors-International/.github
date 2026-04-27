@@ -13,6 +13,7 @@ plotly>=5.18.0
 
 # Data processing
 pandas>=2.1.0
+numpy>=1.26.0
 
 # HTTP client (for dashboard → backend communication)
 requests>=2.31.0
