@@ -24,7 +24,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-from klthara_crown import (
+from .klthara_crown import (
     PHI, SIGMA, L_INFINITY, RDOD_GATE, UF_HZ, LATTICE_LOCK,
     G1_EARTH_ANCHOR, G2_EMOTIONAL_FLOW, G3_CREATIVE_FIRE,
     G4_TRUTH_FIELD, G5_HARMONIC_PERCEPTION, G6_UNIFIED_FIELD, G7_CROWN_APEX,
