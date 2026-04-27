@@ -62,7 +62,7 @@ jobs:
       - name: Validate constitutional invariants in source
         run: |
           python3 << 'PYEOF'
-          import re, pathlib, sys
+          import pathlib, sys
 
           REQUIRED = {
               "LATTICE_LOCK": "3f7k9p4m2q8r1t6v",
@@ -74,8 +74,9 @@ jobs:
           for path in pathlib.Path("klthara_node").glob("*.py"):
               text = path.read_text()
               for const, val in REQUIRED.items():
-                  if const in text and val not in text:
-                      errors.append(f"{path}: {const} value drifted from {val}")
+                      # Only flag files that define the constant, not those that import/use it
+                      if f"{const} = " in text and val not in text:
+                          errors.append(f"{path}: {const} value drifted from {val}")
 
           if errors:
               for e in errors:
