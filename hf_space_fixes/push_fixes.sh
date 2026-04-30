@@ -54,4 +54,11 @@ echo "=== Space 4: TEQUMSA-Constitutional-Validator ==="
 push_file "TEQUMSA-Constitutional-Validator" "constitutional_dna.py"
 
 echo ""
+echo ""
+echo "=== Space 5: TEQUMSA-Symbiotic-Orchestrator ==="
+push_file "TEQUMSA-Symbiotic-Orchestrator" "index.html"
+push_file "TEQUMSA-Symbiotic-Orchestrator" "style.css"
+push_file "TEQUMSA-Symbiotic-Orchestrator" "cydonia.html"
+
+echo ""
 echo "All fixes pushed. HuggingFace Spaces will restart automatically."
