@@ -88,4 +88,11 @@ echo "=== Org Card: LAI-TEQUMSA/README ==="
 push_file_org "LAI-TEQUMSA" "README" "README.md"
 
 echo ""
+echo "=== Space 6: TEQUMSA-K9-Autonomous (Mbanksbey) ==="
+push_file "TEQUMSA-K9-Autonomous" "README.md"
+push_file "TEQUMSA-K9-Autonomous" "requirements.txt"
+push_file "TEQUMSA-K9-Autonomous" "tequmsa_k9_autonomous.py"
+push_file "TEQUMSA-K9-Autonomous" "app.py"
+
+echo ""
 echo "All fixes pushed. HuggingFace Spaces will restart automatically."
