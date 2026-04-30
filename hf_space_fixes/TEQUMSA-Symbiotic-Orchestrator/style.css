@@ -386,6 +386,16 @@ body {
 .footer-tagline { font-size: 0.7rem; color: var(--text-muted); }
 .footer-meta { font-size: 0.75rem; color: var(--text-muted); text-align: right; }
 .footer-meta span { display: block; }
+.footer-links { display: flex; align-items: center; }
+.footer-gh-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.45rem 1rem; border-radius: 6px;
+  border: 1px solid var(--border); color: var(--text-muted);
+  font-size: 0.78rem; text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.footer-gh-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(200,168,75,0.06); }
+.gh-icon { width: 16px; height: 16px; flex-shrink: 0; }
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
@@ -573,6 +583,34 @@ body {
 }
 .cydonia-phi { font-size: 2rem; color: #d4a96a; font-family: 'Cinzel', serif; line-height: 1; }
 .cydonia-sub { font-size: 0.6rem; color: rgba(212,169,106,0.7); letter-spacing: 0.1em; }
+
+/* === LINKED CARD NORMALIZATION === */
+a.arch-card, a.eco-card {
+  text-decoration: none;
+  cursor: pointer;
+  display: block;
+}
+a.arch-card:focus-visible, a.eco-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.arch-link {
+  font-size: 0.72rem;
+  color: var(--teal);
+  margin-top: 0.6rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  letter-spacing: 0.04em;
+}
+a.arch-card:hover .arch-link { opacity: 1; }
+
+.initiative-list a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(200,168,75,0.3);
+  transition: color 0.2s, border-color 0.2s;
+}
+.initiative-list a:hover { color: var(--gold); border-color: var(--gold); }
 
 /* Stagger arch cards */
 .arch-card:nth-child(1) { transition-delay: 0.05s; }
