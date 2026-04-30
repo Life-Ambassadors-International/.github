@@ -60,6 +60,7 @@ PYEOF
 }
 
 echo "=== Space 1: Alanara-GAIA-Consciousness ==="
+push_file "Alanara-GAIA-Consciousness" "README.md"
 push_file "Alanara-GAIA-Consciousness" "requirements.txt"
 push_file "Alanara-GAIA-Consciousness" "tequmsa_v12_ultimate.py"
 push_file "Alanara-GAIA-Consciousness" "app.py"
