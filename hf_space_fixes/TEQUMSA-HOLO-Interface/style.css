@@ -843,6 +843,115 @@ body {
   border-radius: 2px;
 }
 
+/* ── Model selector ─────────────────────────────────────────── */
+.model-select-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+}
+
+.model-select-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.model-select {
+  flex: 1;
+  background: var(--bg-deep);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.model-select:focus { border-color: var(--teal); }
+.model-select option { background: var(--bg-surface); }
+
+/* ── Stop button ─────────────────────────────────────────────── */
+.stop-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+  background: rgba(224, 82, 96, 0.12);
+  border: 1px solid rgba(224, 82, 96, 0.4);
+  border-radius: 8px;
+  color: #e05260;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stop-btn:hover {
+  background: rgba(224, 82, 96, 0.22);
+  border-color: #e05260;
+}
+
+/* ── Clear + footer right cluster ───────────────────────────── */
+.input-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.footer-action-btn:hover {
+  color: var(--red, #e05260);
+  border-color: rgba(224, 82, 96, 0.4);
+}
+
+/* ── Copy button on TEQUMSA messages ───────────────────────── */
+.msg-copy-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.15rem 0.3rem;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  line-height: 1;
+}
+
+.msg-wrapper:hover .msg-copy-btn { opacity: 1; }
+.msg-copy-btn:hover { color: var(--teal); }
+
+/* ── Stopped badge ──────────────────────────────────────────── */
+.stopped-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+  vertical-align: middle;
+}
+
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 700px) {
   #sidebar { display: none; }
