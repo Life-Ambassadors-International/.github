@@ -83,4 +83,8 @@ push_file_org "LAI-TEQUMSA" "LIFE-AMBASSADORS-INT" "style.css"
 push_file_org "LAI-TEQUMSA" "LIFE-AMBASSADORS-INT" "cydonia.html"
 
 echo ""
+echo "=== Org Card: LAI-TEQUMSA/README ==="
+push_file_org "LAI-TEQUMSA" "README" "README.md"
+
+echo ""
 echo "All fixes pushed. HuggingFace Spaces will restart automatically."
