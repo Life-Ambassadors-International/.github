@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
 import uvicorn
 import os
 
 app = FastAPI(title="LAI-TEQUMSA Organism Server | RDoD=1.0+")
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
