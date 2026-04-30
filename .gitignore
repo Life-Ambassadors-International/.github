@@ -112,3 +112,5 @@ grafana-data/
 !config/
 !deploy/
 !.github/workflows/
+klthara_*_state.json
+unified-run-report.json
