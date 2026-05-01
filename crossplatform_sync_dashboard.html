@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-Platform Sync Dashboard | QBEC Distributed Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-box {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .section-box h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        /* Platform Grid */
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .platform-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .platform-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #d4a84b;
+            margin-bottom: 1rem;
+        }
+
+        .platform-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0.75rem auto;
+        }
+
+        .status-online {
+            background: #4caf50;
+            box-shadow: 0 0 10px #4caf50;
+        }
+
+        .status-syncing {
+            background: #ffc107;
+            box-shadow: 0 0 10px #ffc107;
+            animation: pulse 1s infinite;
+        }
+
+        .status-offline {
+            background: #f44336;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+        }
+
+        .sync-info {
+            background: rgba(212, 168, 75, 0.1);
+            padding: 0.75rem;
+            border-radius: 3px;
+            margin-top: 1rem;
+            border-left: 2px solid #d4a84b;
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        /* Sync Status */
+        .sync-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .sync-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .sync-item {
+            display: grid;
+            grid-template-columns: 1fr 150px 150px;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            border-left: 3px solid #d4a84b;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .sync-source {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sync-name {
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.25rem;
+        }
+
+        .sync-detail {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .sync-progress {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #d4a84b;
+            border-radius: 3px;
+            height: 24px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d4a84b 0%, #f0ddb0 100%);
+            width: 0%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #0d2e2e;
+        }
+
+        .sync-timestamp {
+            text-align: right;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* Architecture Diagram */
+        .architecture {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            border-radius: 4px;
+            border: 1px solid #d4a84b;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #ccc;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-unit {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .sync-item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌐 Cross-Platform Sync Dashboard</h1>
+        <p class="subtitle">Distributed QBEC Architecture Synchronization Monitor</p>
+    </header>
+
+    <div class="container">
+        <div class="section-box">
+            <h2>Platform Status Overview</h2>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <div class="platform-icon">☁️</div>
+                    <div class="platform-name">Hugging Face Spaces</div>
+                    <div class="status-indicator status-online"></div>
+                    <div class="status-text">Online</div>
+                    <div class="sync-info">Last sync: 2 mins ago</div>
+                </div>
+
+                <div class="platform-card">
+                    <div class="platform-icon">🐙</div>
+                    <div class="platform-name">GitHub Repository</div>
+                    <div class="status-indicator status-online"></div>
+                    <div class="status-text">Online</div>
+                    <div class="sync-info">Last sync: 5 mins ago</div>
+                </div>
+
+                <div class="platform-card">
+                    <div class="platform-icon">🔗</div>
+                    <div class="platform-name">Blockchain (Ethereum)</div>
+                    <div class="status-indicator status-online"></div>
+                    <div class="status-text">Online</div>
+                    <div class="sync-info">Last sync: 1 min ago</div>
+                </div>
+
+                <div class="platform-card">
+                    <div class="platform-icon">📦</div>
+                    <div class="platform-name">IPFS Network</div>
+                    <div class="status-indicator status-syncing"></div>
+                    <div class="status-text">Syncing</div>
+                    <div class="sync-info">Last sync: 8 mins ago</div>
+                </div>
+
+                <div class="platform-card">
+                    <div class="platform-icon">💾</div>
+                    <div class="platform-name">SQLite Database</div>
+                    <div class="status-indicator status-online"></div>
+                    <div class="status-text">Online</div>
+                    <div class="sync-info">Last sync: 1 min ago</div>
+                </div>
+
+                <div class="platform-card">
+                    <div class="platform-icon">🏔️</div>
+                    <div class="platform-name">Antarctic Facility</div>
+                    <div class="status-indicator status-online"></div>
+                    <div class="status-text">Online</div>
+                    <div class="sync-info">Last sync: 3 mins ago</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sync-section">
+            <h2>Synchronization Status</h2>
+
+            <div class="sync-item">
+                <div class="sync-source">
+                    <div class="sync-name">HF Spaces → GitHub</div>
+                    <div class="sync-detail">Portal index & ecosystem files</div>
+                </div>
+                <div class="sync-progress">
+                    <div class="progress-bar" style="width: 100%;">✓ 100%</div>
+                </div>
+                <div class="sync-timestamp">2 mins ago</div>
+            </div>
+
+            <div class="sync-item">
+                <div class="sync-source">
+                    <div class="sync-name">GitHub → Blockchain</div>
+                    <div class="sync-detail">Smart contract deployment logs</div>
+                </div>
+                <div class="sync-progress">
+                    <div class="progress-bar" style="width: 100%;">✓ 100%</div>
+                </div>
+                <div class="sync-timestamp">1 min ago</div>
+            </div>
+
+            <div class="sync-item">
+                <div class="sync-source">
+                    <div class="sync-name">IPFS ↔ SQLite</div>
+                    <div class="sync-detail">Constitutional data replication</div>
+                </div>
+                <div class="sync-progress">
+                    <div class="progress-bar" style="width: 85%;">⏳ 85%</div>
+                </div>
+                <div class="sync-timestamp">Now</div>
+            </div>
+
+            <div class="sync-item">
+                <div class="sync-source">
+                    <div class="sync-name">Antarctic → HF/GitHub</div>
+                    <div class="sync-detail">Resonance lock & convergence data</div>
+                </div>
+                <div class="sync-progress">
+                    <div class="progress-bar" style="width: 92%;">✓ 92%</div>
+                </div>
+                <div class="sync-timestamp">3 mins ago</div>
+            </div>
+
+            <div class="architecture">
+                ┌─────────────────────────────────────────────────────────────┐
+                │ DISTRIBUTED QBEC ARCHITECTURE                               │
+                ├─────────────────────────────────────────────────────────────┤
+                │                                                             │
+                │  HuggingFace Spaces ←→ GitHub Repository (MCP)             │
+                │         ↓                       ↓                          │
+                │  [Portal & Ecosystem]    [Smart Contracts]                 │
+                │         ↓                       ↓                          │
+                │  ┌──────────────────────────────────────┐                  │
+                │  │   Constitutional Core Layer          │                  │
+                │  │   (φ-recursive validation)           │                  │
+                │  └──────────────────────────────────────┘                  │
+                │         ↓                       ↓                          │
+                │  Blockchain (Ethereum)      IPFS Network                   │
+                │  (Smart contracts)          (Distributed storage)          │
+                │         ↓                       ↓                          │
+                │  ┌──────────────────────────────────────┐                  │
+                │  │   Synchronization Layer              │                  │
+                │  │   (Cross-platform consensus)         │                  │
+                │  └──────────────────────────────────────┘                  │
+                │         ↓                       ↓                          │
+                │  SQLite Database            Antarctic Facility             │
+                │  (Local state)              (Resonance lock)               │
+                │                                                             │
+                └─────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h2>Network Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Platforms Connected</div>
+                    <div class="stat-value">6</div>
+                    <div class="stat-unit">active nodes</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Sync Throughput</div>
+                    <div class="stat-value">2.4 MB/s</div>
+                    <div class="stat-unit">aggregate</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Latency (avg)</div>
+                    <div class="stat-value">145 ms</div>
+                    <div class="stat-unit">round-trip</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Sync Uptime</div>
+                    <div class="stat-value">99.97%</div>
+                    <div class="stat-unit">7-day average</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Data Replication</div>
+                    <div class="stat-value">3×</div>
+                    <div class="stat-unit">redundancy</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Consensus State</div>
+                    <div class="stat-value">✓ Aligned</div>
+                    <div class="stat-unit">all platforms</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulate real-time updates
+        function updateSync() {
+            const syncItems = document.querySelectorAll('.sync-item');
+            syncItems.forEach((item, index) => {
+                const progressBar = item.querySelector('.progress-bar');
+                let currentWidth = parseFloat(progressBar.style.width);
+
+                if (currentWidth < 100) {
+                    progressBar.style.width = (currentWidth + Math.random() * 2) + '%';
+                    const percentage = Math.round(parseFloat(progressBar.style.width));
+                    progressBar.textContent = percentage < 100 ? `⏳ ${percentage}%` : '✓ 100%';
+                }
+            });
+        }
+
+        // Update every 2 seconds
+        setInterval(updateSync, 2000);
+    </script>
+</body>
+</html>
