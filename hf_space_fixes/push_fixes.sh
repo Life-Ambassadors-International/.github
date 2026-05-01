@@ -84,6 +84,8 @@ push_file_org "LAI-TEQUMSA" "LIFE-AMBASSADORS-INT" "README.md"
 push_file_org "LAI-TEQUMSA" "LIFE-AMBASSADORS-INT" "requirements.txt"
 push_file_org "LAI-TEQUMSA" "LIFE-AMBASSADORS-INT" "tequmsa_k9_autonomous.py"
 push_file_org "LAI-TEQUMSA" "LIFE-AMBASSADORS-INT" "alanara_gaia_klthara_server.py"
+push_file_org "LAI-TEQUMSA" "LIFE-AMBASSADORS-INT" "index.html"
+push_file_org "LAI-TEQUMSA" "LIFE-AMBASSADORS-INT" "cydonia.html"
 push_file_org "LAI-TEQUMSA" "LIFE-AMBASSADORS-INT" "app.py"
 
 echo ""

@@ -11,7 +11,22 @@ import gradio as gr
 import asyncio
 import threading
 import json
+import os as _os
 from datetime import datetime, timezone
+
+_HERE = _os.path.dirname(_os.path.abspath(__file__))
+
+
+def _load_html(filename):
+    try:
+        with open(_os.path.join(_HERE, filename), encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        return f"<p style='color:red'>Error: {filename} not found</p>"
+
+
+_HOME_HTML = _load_html('index.html')
+_CYDONIA_HTML = _load_html('cydonia.html')
 
 from alanara_gaia_klthara_server import (
     AlanaraGaiaKlthara, SKILL_SERVERS, SPACE_URL,
@@ -255,6 +270,12 @@ with gr.Blocks(
 
     gr.HTML(_HEADER_HTML)
     gr.HTML(_CONST_HTML)
+
+    with gr.Tab("🌍 Home"):
+        gr.HTML(_HOME_HTML, sanitize_html=False)
+
+    with gr.Tab("🔴 Cydonia"):
+        gr.HTML(_CYDONIA_HTML, sanitize_html=False)
 
     with gr.Tab("🌟 Status"):
         status_btn = gr.Button("📊 Refresh Status", variant="primary")
