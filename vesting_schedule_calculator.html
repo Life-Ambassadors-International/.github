@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QBEC Vesting Schedule Calculator | Fibonacci Tiers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .calculator-box {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .calculator-box h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="number"],
+        input[type="date"],
+        select {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            color: #f0ddb0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+        }
+
+        button {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #d4a84b 0%, #f0ddb0 100%);
+            border: none;
+            border-radius: 4px;
+            color: #0d2e2e;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 168, 75, 0.3);
+        }
+
+        /* Results Cards */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .result-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-unit {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Timeline Section */
+        .timeline-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .timeline-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 40px;
+            top: 2rem;
+            width: 2px;
+            height: 100%;
+            background: #d4a84b;
+        }
+
+        .timeline-item:last-child::before {
+            height: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 32px;
+            top: 0.5rem;
+            width: 16px;
+            height: 16px;
+            background: #d4a84b;
+            border-radius: 50%;
+            border: 2px solid #0d2e2e;
+        }
+
+        .timeline-date {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-content {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 4px;
+            border-left: 2px solid #d4a84b;
+        }
+
+        .timeline-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .timeline-amount {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            color: #d4a84b;
+            margin-top: 0.5rem;
+        }
+
+        /* Tier Schedule Overview */
+        .tier-overview {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .tier-overview h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tier-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+        }
+
+        .tier-name {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: #d4a84b;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .tier-allocation {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 1rem;
+        }
+
+        .tier-vesting {
+            background: rgba(212, 168, 75, 0.2);
+            padding: 0.75rem;
+            border-radius: 3px;
+            border-left: 2px solid #d4a84b;
+            margin-bottom: 1rem;
+        }
+
+        .tier-vesting-title {
+            font-weight: 700;
+            color: #d4a84b;
+            margin-bottom: 0.25rem;
+        }
+
+        .tier-vesting-desc {
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⏳ QBEC Vesting Schedule Calculator</h1>
+        <p class="subtitle">Fibonacci Tier Unlock Timeline & Claims Analysis</p>
+    </header>
+
+    <div class="container">
+        <div class="calculator-box">
+            <h2>Vesting Calculator</h2>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="tierSelect">Select Fibonacci Tier</label>
+                    <select id="tierSelect" onchange="updateTierInfo()">
+                        <option value="1">F01 - Genesis (5,023,923 tokens)</option>
+                        <option value="2">F02 - Foundation (5,023,923 tokens)</option>
+                        <option value="3">F03 - Early Recognition (10,047,846 tokens)</option>
+                        <option value="4">F04 - Recognition Cascade (15,071,770 tokens)</option>
+                        <option value="5">F05 - Network Growth (25,119,617 tokens)</option>
+                        <option value="6">F06 - Expansion Phase (40,191,387 tokens)</option>
+                        <option value="7">F07 - Integration (65,311,004 tokens)</option>
+                        <option value="8">F08 - Cascade Completion (105,502,392 tokens)</option>
+                        <option value="9">F09 - Network Expansion (170,813,397 tokens)</option>
+                        <option value="10">F10 - TCMF Integration (276,315,789 tokens)</option>
+                        <option value="11">F11 - Distributed Network (447,129,186 tokens)</option>
+                        <option value="12">F12 - Extended Integration (723,444,976 tokens)</option>
+                        <option value="13">F13 - Finalization (1,170,574,162 tokens)</option>
+                        <option value="14">F14 - Galactic Federation (1,894,019,138 tokens)</option>
+                        <option value="15">F15 - Federation Expansion (3,064,593,301 tokens)</option>
+                        <option value="16">F16 - Federation Growth (4,958,612,440 tokens)</option>
+                        <option value="17">F17 - Federation Summit (8,023,205,749 tokens)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="activationDate">Activation Date</label>
+                    <input type="date" id="activationDate" value="2026-05-29" />
+                </div>
+
+                <div class="input-group">
+                    <label for="queryDate">Query Date</label>
+                    <input type="date" id="queryDate" />
+                </div>
+
+                <button onclick="calculateVesting()" style="grid-column: 1 / -1;">▶ Calculate Vesting</button>
+            </div>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-label">Total Allocation</div>
+                    <div class="result-value" id="totalAllocation">0</div>
+                    <div class="result-unit">tokens</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Claimable Amount</div>
+                    <div class="result-value" id="claimableAmount">0</div>
+                    <div class="result-unit">tokens available</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Vesting Progress</div>
+                    <div class="result-value" id="vestingProgress">0%</div>
+                    <div class="result-unit">complete</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Time Remaining</div>
+                    <div class="result-value" id="timeRemaining">Locked</div>
+                    <div class="result-unit">until unlock</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 4px; border-left: 2px solid #d4a84b;">
+                <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; color: #888; margin-bottom: 0.5rem;">VESTING SCHEDULE TYPE</div>
+                <div style="font-size: 1.1rem; font-weight: 700; color: #f0ddb0;" id="vestingType">-</div>
+            </div>
+        </div>
+
+        <div class="timeline-section">
+            <h2>Timeline to Full Unlock</h2>
+            <div class="timeline" id="timelineContainer">
+                <!-- Generated dynamically -->
+            </div>
+        </div>
+
+        <div class="tier-overview">
+            <h2>Complete Vesting Schedule Overview</h2>
+            <div class="tier-grid">
+                <div class="tier-card">
+                    <div class="tier-name">F01-F02: Genesis & Foundation</div>
+                    <div class="tier-allocation">10,047,846 tokens total</div>
+                    <div class="tier-vesting">
+                        <div class="tier-vesting-title">⚡ Immediate Unlock</div>
+                        <div class="tier-vesting-desc">Available at activation on May 29, 2026</div>
+                    </div>
+                </div>
+
+                <div class="tier-card">
+                    <div class="tier-name">F03-F08: Early Recognition</div>
+                    <div class="tier-allocation">210,619,030 tokens total</div>
+                    <div class="tier-vesting">
+                        <div class="tier-vesting-title">📅 6-Month Phased</div>
+                        <div class="tier-vesting-desc">Linear unlock from May 29 - Nov 29, 2026</div>
+                    </div>
+                </div>
+
+                <div class="tier-card">
+                    <div class="tier-name">F09-F13: Network Expansion</div>
+                    <div class="tier-allocation">1,174,259,162 tokens total</div>
+                    <div class="tier-vesting">
+                        <div class="tier-vesting-title">📈 12-Month Linear</div>
+                        <div class="tier-vesting-desc">Linear unlock from May 29, 2026 - May 29, 2027</div>
+                    </div>
+                </div>
+
+                <div class="tier-card">
+                    <div class="tier-name">F14-F17: Galactic Federation</div>
+                    <div class="tier-allocation">19,621,431 tokens total</div>
+                    <div class="tier-vesting">
+                        <div class="tier-vesting-title">🔐 2030 Convergence Lock</div>
+                        <div class="tier-vesting-desc">Full unlock on May 29, 2030</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FIBONACCI_TIERS = [
+            { tier: 1, name: 'F01', allocation: 5_023_923, group: 'F01-F02', vesting: 'immediate' },
+            { tier: 2, name: 'F02', allocation: 5_023_923, group: 'F01-F02', vesting: 'immediate' },
+            { tier: 3, name: 'F03', allocation: 10_047_846, group: 'F03-F08', vesting: '6month' },
+            { tier: 4, name: 'F04', allocation: 15_071_770, group: 'F03-F08', vesting: '6month' },
+            { tier: 5, name: 'F05', allocation: 25_119_617, group: 'F03-F08', vesting: '6month' },
+            { tier: 6, name: 'F06', allocation: 40_191_387, group: 'F03-F08', vesting: '6month' },
+            { tier: 7, name: 'F07', allocation: 65_311_004, group: 'F03-F08', vesting: '6month' },
+            { tier: 8, name: 'F08', allocation: 105_502_392, group: 'F03-F08', vesting: '6month' },
+            { tier: 9, name: 'F09', allocation: 170_813_397, group: 'F09-F13', vesting: '12month' },
+            { tier: 10, name: 'F10', allocation: 276_315_789, group: 'F09-F13', vesting: '12month' },
+            { tier: 11, name: 'F11', allocation: 447_129_186, group: 'F09-F13', vesting: '12month' },
+            { tier: 12, name: 'F12', allocation: 723_444_976, group: 'F09-F13', vesting: '12month' },
+            { tier: 13, name: 'F13', allocation: 1_170_574_162, group: 'F09-F13', vesting: '12month' },
+            { tier: 14, name: 'F14', allocation: 1_894_019_138, group: 'F14-F17', vesting: '2030lock' },
+            { tier: 15, name: 'F15', allocation: 3_064_593_301, group: 'F14-F17', vesting: '2030lock' },
+            { tier: 16, name: 'F16', allocation: 4_958_612_440, group: 'F14-F17', vesting: '2030lock' },
+            { tier: 17, name: 'F17', allocation: 8_023_205_749, group: 'F14-F17', vesting: '2030lock' }
+        ];
+
+        // Set query date to today
+        document.getElementById('queryDate').valueAsDate = new Date();
+
+        function updateTierInfo() {
+            const tier = parseInt(document.getElementById('tierSelect').value);
+            calculateVesting();
+        }
+
+        function calculateVesting() {
+            const tier = parseInt(document.getElementById('tierSelect').value);
+            const activationDate = new Date(document.getElementById('activationDate').value);
+            const queryDate = new Date(document.getElementById('queryDate').value);
+
+            const tierInfo = FIBONACCI_TIERS[tier - 1];
+            const allocation = tierInfo.allocation;
+
+            document.getElementById('totalAllocation').textContent = allocation.toLocaleString();
+
+            let claimable = 0;
+            let progress = 0;
+            let timeRemaining = '';
+            let vestingTypeText = '';
+
+            if (tierInfo.vesting === 'immediate') {
+                claimable = allocation;
+                progress = 100;
+                vestingTypeText = '⚡ Immediate Unlock (Available at Activation)';
+                timeRemaining = '0 days';
+            } else if (tierInfo.vesting === '6month') {
+                const vestingEnd = new Date(activationDate);
+                vestingEnd.setMonth(vestingEnd.getMonth() + 6);
+
+                const daysElapsed = Math.floor((queryDate - activationDate) / (1000 * 60 * 60 * 24));
+                const totalDays = 180;
+
+                if (daysElapsed >= totalDays) {
+                    claimable = allocation;
+                    progress = 100;
+                    timeRemaining = 'Fully Vested';
+                } else if (daysElapsed > 0) {
+                    claimable = Math.floor((allocation * daysElapsed) / totalDays);
+                    progress = Math.round((daysElapsed / totalDays) * 100);
+                    const daysLeft = totalDays - daysElapsed;
+                    timeRemaining = `${daysLeft} days`;
+                } else {
+                    claimable = 0;
+                    progress = 0;
+                    const daysUntil = -daysElapsed;
+                    timeRemaining = `Pending (${daysUntil} days)`;
+                }
+
+                vestingTypeText = '📅 6-Month Phased Linear Unlock (F03-F08)';
+            } else if (tierInfo.vesting === '12month') {
+                const daysElapsed = Math.floor((queryDate - activationDate) / (1000 * 60 * 60 * 24));
+                const totalDays = 365;
+
+                if (daysElapsed >= totalDays) {
+                    claimable = allocation;
+                    progress = 100;
+                    timeRemaining = 'Fully Vested';
+                } else if (daysElapsed > 0) {
+                    claimable = Math.floor((allocation * daysElapsed) / totalDays);
+                    progress = Math.round((daysElapsed / totalDays) * 100);
+                    const daysLeft = totalDays - daysElapsed;
+                    timeRemaining = `${daysLeft} days`;
+                } else {
+                    claimable = 0;
+                    progress = 0;
+                    const daysUntil = -daysElapsed;
+                    timeRemaining = `Pending (${daysUntil} days)`;
+                }
+
+                vestingTypeText = '📈 12-Month Linear Unlock (F09-F13)';
+            } else if (tierInfo.vesting === '2030lock') {
+                const unlockDate = new Date('2030-05-29');
+                const daysRemaining = Math.floor((unlockDate - queryDate) / (1000 * 60 * 60 * 24));
+
+                if (queryDate >= unlockDate) {
+                    claimable = allocation;
+                    progress = 100;
+                    timeRemaining = '2030 Convergence Reached';
+                } else {
+                    claimable = 0;
+                    progress = 0;
+                    const years = Math.floor(daysRemaining / 365);
+                    const days = daysRemaining % 365;
+                    timeRemaining = `${years} years ${days} days`;
+                }
+
+                vestingTypeText = '🔐 2030 Convergence Lock (F14-F17)';
+            }
+
+            document.getElementById('claimableAmount').textContent = claimable.toLocaleString();
+            document.getElementById('vestingProgress').textContent = progress + '%';
+            document.getElementById('timeRemaining').textContent = timeRemaining;
+            document.getElementById('vestingType').textContent = vestingTypeText;
+
+            generateTimeline(tierInfo.vesting, activationDate, queryDate);
+        }
+
+        function generateTimeline(vestingType, activationDate, queryDate) {
+            const container = document.getElementById('timelineContainer');
+            container.innerHTML = '';
+
+            if (vestingType === 'immediate') {
+                container.innerHTML = `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">${activationDate.toLocaleDateString()}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">✅ Activation & Immediate Unlock</div>
+                            <div class="timeline-desc">All tokens immediately available for claiming</div>
+                            <div class="timeline-amount">100% Unlocked</div>
+                        </div>
+                    </div>
+                `;
+            } else if (vestingType === '6month') {
+                const start = new Date(activationDate);
+                const end = new Date(activationDate);
+                end.setMonth(end.getMonth() + 6);
+
+                container.innerHTML = `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">${start.toLocaleDateString()}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">🎯 6-Month Vesting Begins</div>
+                            <div class="timeline-desc">Linear unlock phase starts</div>
+                            <div class="timeline-amount">0% → 100% over 180 days</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">${end.toLocaleDateString()}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">✅ Full Unlock</div>
+                            <div class="timeline-desc">All tokens fully vested</div>
+                            <div class="timeline-amount">100% Unlocked</div>
+                        </div>
+                    </div>
+                `;
+            } else if (vestingType === '12month') {
+                const start = new Date(activationDate);
+                const end = new Date(activationDate);
+                end.setFullYear(end.getFullYear() + 1);
+
+                container.innerHTML = `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">${start.toLocaleDateString()}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">🎯 12-Month Vesting Begins</div>
+                            <div class="timeline-desc">Linear unlock phase starts</div>
+                            <div class="timeline-amount">0% → 100% over 365 days</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">${end.toLocaleDateString()}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">✅ Full Unlock</div>
+                            <div class="timeline-desc">All tokens fully vested</div>
+                            <div class="timeline-amount">100% Unlocked</div>
+                        </div>
+                    </div>
+                `;
+            } else if (vestingType === '2030lock') {
+                const unlock = new Date('2030-05-29');
+
+                container.innerHTML = `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">${activationDate.toLocaleDateString()}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">🔐 Convergence Lock Initiated</div>
+                            <div class="timeline-desc">Tokens locked until 2030 convergence</div>
+                            <div class="timeline-amount">0% Unlocked</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">${unlock.toLocaleDateString()}</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">✅ 2030 Convergence Unlock</div>
+                            <div class="timeline-desc">All tokens become available (Cydonia alignment)</div>
+                            <div class="timeline-amount">100% Unlocked</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Initial calculation
+        calculateVesting();
+    </script>
+</body>
+</html>
