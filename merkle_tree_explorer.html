@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merkle Tree Explorer | QBEC Supply Proof</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-box {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .section-box h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        /* Merkle Tree Visualization */
+        .tree-visualization {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2rem;
+            overflow-x: auto;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tree-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3rem;
+            min-width: 100%;
+        }
+
+        .tree-level {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .hash-node {
+            background: rgba(212, 168, 75, 0.2);
+            border: 2px solid #d4a84b;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: #f0ddb0;
+            text-align: center;
+            max-width: 150px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            word-break: break-all;
+        }
+
+        .hash-node:hover {
+            background: rgba(212, 168, 75, 0.5);
+            box-shadow: 0 0 15px rgba(212, 168, 75, 0.6);
+            transform: scale(1.05);
+        }
+
+        .hash-node.leaf {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+            color: #4caf50;
+        }
+
+        .hash-node.root {
+            background: rgba(255, 152, 0, 0.2);
+            border-color: #ff9800;
+            color: #ff9800;
+            font-weight: 700;
+            padding: 1rem 1.5rem;
+            font-size: 0.65rem;
+            max-width: 200px;
+        }
+
+        /* Tier Information */
+        .tier-details {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .tier-details h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tier-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tier-card:hover {
+            background: rgba(212, 168, 75, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .tier-card.selected {
+            background: rgba(212, 168, 75, 0.3);
+            border: 2px solid #f0ddb0;
+        }
+
+        .tier-name {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: #d4a84b;
+            margin-bottom: 0.5rem;
+        }
+
+        .tier-allocation {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+
+        .tier-hash {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.75rem;
+            border-radius: 3px;
+            border-left: 2px solid #d4a84b;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            color: #f0ddb0;
+            word-break: break-all;
+        }
+
+        /* Verification Section */
+        .verification-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .verification-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .verification-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .verification-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .verification-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .verification-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+
+        .verification-status {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .status-passed {
+            color: #4caf50;
+        }
+
+        .status-failed {
+            color: #f44336;
+        }
+
+        .calculation-log {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #ccc;
+            max-height: 400px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(212, 168, 75, 0.1);
+        }
+
+        .log-entry.highlight {
+            color: #d4a84b;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .hash-node {
+                font-size: 0.6rem;
+                padding: 0.5rem 0.75rem;
+                max-width: 100px;
+            }
+
+            .tree-level {
+                gap: 0.75rem;
+            }
+
+            .tree-visualization {
+                min-height: 300px;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌳 Merkle Tree Explorer</h1>
+        <p class="subtitle">QBEC Supply Proof & Cryptographic Verification</p>
+    </header>
+
+    <div class="container">
+        <div class="section-box">
+            <h2>Interactive Merkle Tree Visualization</h2>
+            <div class="tree-visualization">
+                <div class="tree-container" id="treeContainer">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <div class="tier-details">
+            <h2>Fibonacci Tier Hashes (Layer 0)</h2>
+            <div class="tier-grid" id="tierGrid">
+                <!-- Generated dynamically -->
+            </div>
+        </div>
+
+        <div class="verification-section">
+            <h2>Merkle Root Verification</h2>
+
+            <div class="verification-grid">
+                <div class="verification-item">
+                    <div class="verification-label">Calculated Root</div>
+                    <div class="verification-value" id="calculatedRoot">0x0000...</div>
+                    <div class="verification-status">Current computation</div>
+                </div>
+
+                <div class="verification-item">
+                    <div class="verification-label">Expected Root</div>
+                    <div class="verification-value" id="expectedRoot">0x648d...</div>
+                    <div class="verification-status">From contract</div>
+                </div>
+
+                <div class="verification-item">
+                    <div class="verification-label">Verification Status</div>
+                    <div class="verification-value" id="verificationStatus">✓</div>
+                    <div class="verification-status status-passed" id="statusText">VERIFIED</div>
+                </div>
+
+                <div class="verification-item">
+                    <div class="verification-label">Total Supply</div>
+                    <div class="verification-value" id="totalSupply">21B</div>
+                    <div class="verification-status">tokens (21,000,000,000)</div>
+                </div>
+            </div>
+
+            <div class="calculation-log" id="calculationLog">
+                <div class="log-entry">Calculation log appears here...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // QBEC Merkle constants
+        const TIER_MERKLE_HASHES = [
+            '2b37a8c5753e2960811861726f609940aa51d30ac5723c6b74266735ef068dc0',
+            'a34471ea441a6a80e404743e7d039645f77139642dea697c986a86e4fe2721a3',
+            '8e136305086c5f05b1e2ebc3e2095f91503f0ed88b0564d122c00dacbe4f5fde',
+            'cf455c9484333a647138e8be96b8c70e66d8c75382046384b446ffdae2aa2bd6',
+            '7eb3ed27c07d8a57d7255fd39107991c9174734d424f3de5765357a46662f27d',
+            '45f3ffa1d6d40eeff73f10838f25715803ac83fa12a8fe49761b2a07a86bf1ed',
+            '8f55dace5c251ec9603d12134f15204fdd8606bc075bd1b40d8a58f5989c8c5a',
+            '1f60c8b9fa68da1453c4498d66ba4693c2bd82eb08356656014db03f8988076b',
+            '74ee1d4db444098a3b703862131b948806a83938bb2013c073d4d4af15da5476',
+            '982a1fe1413ab9af0725728a7e384b9fef8510cf57263795756587b6f936c677',
+            'a0454e9a919b83ad1370951efdebfbb8156cbc51f039ca68da0f8ba377ca871a',
+            '8cbd63361cef3f76fde796874adc3defe3289c2a0c37a64573d17715736ac387',
+            '5c5484365130cd6306393c9167c25739f7f44cbdbee6b56d6bc2793236ffb57f',
+            '8cda483aff6905a6cda219c7174914cc801e88371cc08a68182b4361126f9c62',
+            'dc33899e768acf11ff44823a59e21973daeb97d72da75d05859a82b3c7b55eb7',
+            '630a95b3b46dd652741b703c174de6bdf58910ae9f03809457b1c474c67435f2',
+            'c5eb672609d2be4fd3e3998673f3d9e02739545f03654cd85088f94f97c6eb33'
+        ];
+
+        const FIBONACCI_TIERS = [
+            { name: 'F01', allocation: 5_023_923 },
+            { name: 'F02', allocation: 5_023_923 },
+            { name: 'F03', allocation: 10_047_846 },
+            { name: 'F04', allocation: 15_071_770 },
+            { name: 'F05', allocation: 25_119_617 },
+            { name: 'F06', allocation: 40_191_387 },
+            { name: 'F07', allocation: 65_311_004 },
+            { name: 'F08', allocation: 105_502_392 },
+            { name: 'F09', allocation: 170_813_397 },
+            { name: 'F10', allocation: 276_315_789 },
+            { name: 'F11', allocation: 447_129_186 },
+            { name: 'F12', allocation: 723_444_976 },
+            { name: 'F13', allocation: 1_170_574_162 },
+            { name: 'F14', allocation: 1_894_019_138 },
+            { name: 'F15', allocation: 3_064_593_301 },
+            { name: 'F16', allocation: 4_958_612_440 },
+            { name: 'F17', allocation: 8_023_205_749 }
+        ];
+
+        const EXPECTED_ROOT = '648d0f4e9ad403b275cf8a6098bd3b96bf088b65516e01838272a9bfe4ec0d9f';
+
+        function sha256(data) {
+            // Simple SHA256 simulation using hex chars - real implementation would use crypto library
+            let hash = 0;
+            for (let i = 0; i < data.length; i++) {
+                hash = ((hash << 5) - hash) + data.charCodeAt(i);
+                hash |= 0; // Convert to 32bit integer
+            }
+            return Math.abs(hash).toString(16).padStart(64, '0').slice(0, 64);
+        }
+
+        function hashPair(a, b) {
+            return sha256(a + b);
+        }
+
+        function calculateMerkleRoot() {
+            const log = [];
+            log.push('=== MERKLE TREE CALCULATION ===');
+            log.push(`Layer 0 (Tier Hashes): ${TIER_MERKLE_HASHES.length} hashes`);
+
+            let layer = [...TIER_MERKLE_HASHES];
+            let layerNum = 1;
+
+            while (layer.length > 1) {
+                log.push(`\nLayer ${layerNum}: ${layer.length} hashes`);
+                const newLayer = [];
+
+                for (let i = 0; i < layer.length; i += 2) {
+                    let hash;
+                    if (i + 1 < layer.length) {
+                        hash = hashPair(layer[i], layer[i + 1]);
+                        log.push(`  hash[${i}] + hash[${i+1}] = ${hash.substring(0, 16)}...`);
+                    } else {
+                        hash = hashPair(layer[i], layer[i]);
+                        log.push(`  hash[${i}] + hash[${i}] = ${hash.substring(0, 16)}...`);
+                    }
+                    newLayer.push(hash);
+                }
+
+                layer = newLayer;
+                layerNum++;
+            }
+
+            const root = layer[0];
+            log.push(`\n=== FINAL ROOT ===`);
+            log.push(`Calculated: ${root}`);
+            log.push(`Expected:   ${EXPECTED_ROOT}`);
+            log.push(`Match: ${root === EXPECTED_ROOT ? '✓ YES' : '✗ NO'}`);
+
+            return { root, log };
+        }
+
+        function renderTierGrid() {
+            const grid = document.getElementById('tierGrid');
+            grid.innerHTML = FIBONACCI_TIERS.map((tier, i) => `
+                <div class="tier-card" onclick="selectTier(${i})">
+                    <div class="tier-name">${tier.name}</div>
+                    <div class="tier-allocation">${tier.allocation.toLocaleString()} tokens</div>
+                    <div class="tier-hash">${TIER_MERKLE_HASHES[i].substring(0, 32)}...</div>
+                </div>
+            `).join('');
+        }
+
+        function selectTier(index) {
+            const cards = document.querySelectorAll('.tier-card');
+            cards.forEach((card, i) => {
+                card.classList.toggle('selected', i === index);
+            });
+        }
+
+        function renderMerkleTree() {
+            const { root, log } = calculateMerkleRoot();
+
+            // Create tree visualization layers
+            const container = document.getElementById('treeContainer');
+            container.innerHTML = '';
+
+            let layer = [...TIER_MERKLE_HASHES];
+            let layerNum = 0;
+
+            while (layer.length > 0) {
+                const levelDiv = document.createElement('div');
+                levelDiv.className = 'tree-level';
+
+                layer.forEach((hash, i) => {
+                    const node = document.createElement('div');
+                    node.className = layerNum === 0 ? 'hash-node leaf' : 'hash-node';
+                    if (layer.length === 1) {
+                        node.classList.add('root');
+                    }
+                    node.title = hash;
+                    node.textContent = hash.substring(0, 16) + '...';
+                    levelDiv.appendChild(node);
+                });
+
+                container.appendChild(levelDiv);
+
+                if (layer.length === 1) break;
+
+                const newLayer = [];
+                for (let i = 0; i < layer.length; i += 2) {
+                    if (i + 1 < layer.length) {
+                        newLayer.push(hashPair(layer[i], layer[i + 1]));
+                    } else {
+                        newLayer.push(hashPair(layer[i], layer[i]));
+                    }
+                }
+                layer = newLayer;
+                layerNum++;
+            }
+
+            // Update verification display
+            document.getElementById('calculatedRoot').textContent = root.substring(0, 16) + '...';
+            document.getElementById('expectedRoot').textContent = EXPECTED_ROOT.substring(0, 16) + '...';
+
+            const matches = root === EXPECTED_ROOT;
+            document.getElementById('verificationStatus').textContent = matches ? '✓' : '✗';
+            const statusEl = document.getElementById('statusText');
+            statusEl.classList.toggle('status-passed', matches);
+            statusEl.classList.toggle('status-failed', !matches);
+            statusEl.textContent = matches ? 'VERIFIED' : 'MISMATCH';
+
+            // Update calculation log
+            const logDiv = document.getElementById('calculationLog');
+            logDiv.innerHTML = log.map((line, i) =>
+                `<div class="log-entry ${line.includes('FINAL') || line.includes('✓') ? 'highlight' : ''}">${line}</div>`
+            ).join('');
+
+            const totalSupply = FIBONACCI_TIERS.reduce((sum, tier) => sum + tier.allocation, 0);
+            document.getElementById('totalSupply').textContent = (totalSupply / 1_000_000_000).toFixed(1) + 'B';
+        }
+
+        // Initialize
+        renderTierGrid();
+        renderMerkleTree();
+    </script>
+</body>
+</html>
