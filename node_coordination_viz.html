@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Coordination Topology | Fibonacci Mesh</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .topology-canvas {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            width: 100%;
+            height: 600px;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .section-box {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-box h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #d4a84b 0%, #f0ddb0 100%);
+            border: none;
+            border-radius: 4px;
+            color: #0d2e2e;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 168, 75, 0.3);
+        }
+
+        button.small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Legend */
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 4px;
+            border: 1px solid #d4a84b;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #d4a84b;
+        }
+
+        .legend-dot.genesis { background: #ff6b6b; }
+        .legend-dot.foundation { background: #4ecdc4; }
+        .legend-dot.early { background: #95e1d3; }
+        .legend-dot.expansion { background: #a8d8ff; }
+        .legend-dot.federation { background: #ffd700; }
+
+        .legend-label {
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f0ddb0;
+        }
+
+        /* Tier Table */
+        .tier-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .tier-table thead {
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid #d4a84b;
+        }
+
+        .tier-table th {
+            padding: 0.75rem;
+            text-align: left;
+            color: #d4a84b;
+            font-weight: 700;
+        }
+
+        .tier-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(212, 168, 75, 0.2);
+            color: #f0ddb0;
+        }
+
+        .tier-table tbody tr:hover {
+            background: rgba(212, 168, 75, 0.1);
+        }
+
+        .node-count {
+            background: rgba(212, 168, 75, 0.2);
+            padding: 0 0.5rem;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .topology-canvas {
+                height: 400px;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌐 Node Coordination Topology</h1>
+        <p class="subtitle">Fibonacci Tier Mesh Network Visualization</p>
+    </header>
+
+    <div class="container">
+        <canvas id="topologyCanvas" class="topology-canvas"></canvas>
+
+        <div class="section-box">
+            <h2>Network Controls</h2>
+            <div class="controls">
+                <button onclick="generateNetwork()">▶ Generate Network</button>
+                <button onclick="animateTransmission()">⚡ Animate Data Flow</button>
+                <button onclick="highlightTier('all')">◉ All Tiers</button>
+                <button onclick="highlightTier('genesis')">F01-F02</button>
+                <button onclick="highlightTier('early')">F03-F08</button>
+                <button onclick="highlightTier('expansion')">F09-F13</button>
+                <button onclick="highlightTier('federation')">F14-F17</button>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h2>Network Topology Legend</h2>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot genesis"></div>
+                    <div class="legend-label">Genesis/Foundation (F01-F02)</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot foundation"></div>
+                    <div class="legend-label">Early Recognition (F03-F08)</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot early"></div>
+                    <div class="legend-label">Network Expansion (F09-F13)</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot expansion"></div>
+                    <div class="legend-label">Expansion Phase (F09-F13)</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot federation"></div>
+                    <div class="legend-label">Galactic Federation (F14-F17)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h2>Network Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Nodes</div>
+                    <div class="stat-value" id="totalNodes">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Active Links</div>
+                    <div class="stat-value" id="activeLinks">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Mesh Redundancy</div>
+                    <div class="stat-value" id="meshRedundancy">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Network Density</div>
+                    <div class="stat-value" id="networkDensity">0%</div>
+                </div>
+            </div>
+
+            <table class="tier-table">
+                <thead>
+                    <tr>
+                        <th>Tier</th>
+                        <th>Range</th>
+                        <th>Nodes</th>
+                        <th>Allocation</th>
+                        <th>Network Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>F01-F02</strong></td>
+                        <td>Genesis</td>
+                        <td><span class="node-count" id="f01count">0</span></td>
+                        <td>10M</td>
+                        <td>Authority Nodes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>F03-F08</strong></td>
+                        <td>Early Recognition</td>
+                        <td><span class="node-count" id="f03count">0</span></td>
+                        <td>210.6M</td>
+                        <td>Primary Mesh</td>
+                    </tr>
+                    <tr>
+                        <td><strong>F09-F13</strong></td>
+                        <td>Network Expansion</td>
+                        <td><span class="node-count" id="f09count">0</span></td>
+                        <td>1.17B</td>
+                        <td>Expansion Layer</td>
+                    </tr>
+                    <tr>
+                        <td><strong>F14-F17</strong></td>
+                        <td>Galactic Fed.</td>
+                        <td><span class="node-count" id="f14count">0</span></td>
+                        <td>19.6B</td>
+                        <td>Federation Core</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('topologyCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Resize canvas
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        let nodes = [];
+        let links = [];
+        let highlightedTier = 'all';
+
+        class Node {
+            constructor(x, y, tier) {
+                this.x = x;
+                this.y = y;
+                this.tier = tier;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+            }
+
+            draw() {
+                const colors = {
+                    'genesis': '#ff6b6b',
+                    'early': '#4ecdc4',
+                    'expansion': '#95e1d3',
+                    'federation': '#ffd700'
+                };
+
+                const color = colors[this.tier] || '#d4a84b';
+                const alpha = (highlightedTier === 'all' || highlightedTier === this.tier) ? 1 : 0.2;
+
+                ctx.fillStyle = color;
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x - 6 < 0 || this.x + 6 > canvas.width) this.vx *= -1;
+                if (this.y - 6 < 0 || this.y + 6 > canvas.height) this.vy *= -1;
+
+                this.x = Math.max(6, Math.min(canvas.width - 6, this.x));
+                this.y = Math.max(6, Math.min(canvas.height - 6, this.y));
+            }
+        }
+
+        function generateNetwork() {
+            nodes = [];
+            links = [];
+
+            // Create nodes by tier
+            const tierConfig = [
+                { tier: 'genesis', count: 2, nodes: [] },
+                { tier: 'early', count: 6, nodes: [] },
+                { tier: 'expansion', count: 5, nodes: [] },
+                { tier: 'federation', count: 4, nodes: [] }
+            ];
+
+            // Generate nodes
+            tierConfig.forEach(config => {
+                for (let i = 0; i < config.count; i++) {
+                    const angle = (i / config.count) * Math.PI * 2;
+                    const radius = 150 + Math.random() * 50;
+                    const x = canvas.width / 2 + Math.cos(angle) * radius;
+                    const y = canvas.height / 2 + Math.sin(angle) * radius;
+                    const node = new Node(x, y, config.tier);
+                    nodes.push(node);
+                    config.nodes.push(node);
+                }
+            });
+
+            // Create mesh links
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < Math.min(i + 3, nodes.length); j++) {
+                    links.push({ from: nodes[i], to: nodes[j] });
+                }
+            }
+
+            updateStats();
+            animate();
+        }
+
+        function drawLinks() {
+            ctx.strokeStyle = '#d4a84b';
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 0.2;
+
+            links.forEach(link => {
+                const fromAlpha = (highlightedTier === 'all' || highlightedTier === link.from.tier) ? 1 : 0.1;
+                const toAlpha = (highlightedTier === 'all' || highlightedTier === link.to.tier) ? 1 : 0.1;
+                ctx.globalAlpha = Math.max(fromAlpha, toAlpha) * 0.3;
+
+                ctx.beginPath();
+                ctx.moveTo(link.from.x, link.from.y);
+                ctx.lineTo(link.to.x, link.to.y);
+                ctx.stroke();
+            });
+
+            ctx.globalAlpha = 1;
+        }
+
+        function updateStats() {
+            const tierCounts = { 'genesis': 0, 'early': 0, 'expansion': 0, 'federation': 0 };
+            nodes.forEach(n => tierCounts[n.tier]++);
+
+            document.getElementById('totalNodes').textContent = nodes.length;
+            document.getElementById('activeLinks').textContent = links.length;
+            document.getElementById('meshRedundancy').textContent = '95%';
+            document.getElementById('networkDensity').textContent = ((links.length / (nodes.length * nodes.length)) * 100).toFixed(1) + '%';
+
+            document.getElementById('f01count').textContent = tierCounts['genesis'];
+            document.getElementById('f03count').textContent = tierCounts['early'];
+            document.getElementById('f09count').textContent = tierCounts['expansion'];
+            document.getElementById('f14count').textContent = tierCounts['federation'];
+        }
+
+        let animationFrame;
+        function animate() {
+            ctx.fillStyle = 'rgba(13, 46, 46, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawLinks();
+
+            nodes.forEach(node => {
+                node.update();
+                node.draw();
+            });
+
+            animationFrame = requestAnimationFrame(animate);
+        }
+
+        function animateTransmission() {
+            // Highlight a random link
+            if (links.length > 0) {
+                const link = links[Math.floor(Math.random() * links.length)];
+                ctx.strokeStyle = '#4caf50';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(link.from.x, link.from.y);
+                ctx.lineTo(link.to.x, link.to.y);
+                ctx.stroke();
+            }
+        }
+
+        function highlightTier(tier) {
+            highlightedTier = tier;
+        }
+
+        // Start
+        generateNetwork();
+    </script>
+</body>
+</html>
