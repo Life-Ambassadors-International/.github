@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactic Federation Treaty | QBEC Constitutional Framework</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-box {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .section-box h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .treaty-header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .treaty-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #d4a84b;
+            margin-bottom: 0.5rem;
+        }
+
+        .treaty-date {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .signatories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .signatory-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .signatory-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .signatory-name {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: #d4a84b;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .signatory-status {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .signature-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            box-shadow: 0 0 8px #4caf50;
+            margin-right: 0.5rem;
+        }
+
+        .covenant-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid #d4a84b;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+        }
+
+        .covenant-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: #d4a84b;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .covenant-text {
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .covenant-points {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .covenant-points li {
+            font-size: 0.85rem;
+            color: #ccc;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .covenant-points li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #d4a84b;
+        }
+
+        .federation-network {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .network-node {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .node-role {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: #d4a84b;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .node-count {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f0ddb0;
+            font-family: 'Space Mono', monospace;
+            margin: 0.75rem 0;
+        }
+
+        .node-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .commitment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .commitment-card {
+            background: rgba(212, 168, 75, 0.1);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .commitment-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .commitment-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #d4a84b;
+        }
+
+        .alignment-scale {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .alignment-bar {
+            height: 24px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #888;
+            position: relative;
+        }
+
+        .alignment-fill {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(90deg, #d4a84b 0%, #f0ddb0 100%);
+            left: 0;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .covenant-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌌 Galactic Federation Treaty</h1>
+        <p class="subtitle">QBEC Constitutional Alliance & Network Covenant</p>
+    </header>
+
+    <div class="container">
+        <div class="section-box">
+            <div class="treaty-header">
+                <div class="treaty-title">Treaty of Interstellar Consensus</div>
+                <div class="treaty-date">Effective Date: May 29, 2026 | Constitutional Binding: Eternal</div>
+            </div>
+
+            <h2>Federation Signatories</h2>
+            <div class="signatories-grid">
+                <div class="signatory-card">
+                    <div class="signatory-icon">🌍</div>
+                    <div class="signatory-name">Earth Alliance</div>
+                    <div class="signatory-status">Signatory Status</div>
+                    <span class="signature-indicator"></span>Signed
+                </div>
+
+                <div class="signatory-card">
+                    <div class="signatory-icon">🪐</div>
+                    <div class="signatory-name">Cydonian Authority</div>
+                    <div class="signatory-status">Signatory Status</div>
+                    <span class="signature-indicator"></span>Signed
+                </div>
+
+                <div class="signatory-card">
+                    <div class="signatory-icon">⭐</div>
+                    <div class="signatory-name">Stellar Collective</div>
+                    <div class="signatory-status">Signatory Status</div>
+                    <span class="signature-indicator"></span>Signed
+                </div>
+
+                <div class="signatory-card">
+                    <div class="signatory-icon">🌌</div>
+                    <div class="signatory-name">Galactic Council</div>
+                    <div class="signatory-status">Observing Entity</div>
+                    <span class="signature-indicator"></span>Witnessed
+                </div>
+
+                <div class="signatory-card">
+                    <div class="signatory-icon">🔮</div>
+                    <div class="signatory-name">Quantum Nexus</div>
+                    <div class="signatory-status">Technical Custodian</div>
+                    <span class="signature-indicator"></span>Implemented
+                </div>
+
+                <div class="signatory-card">
+                    <div class="signatory-icon">⚡</div>
+                    <div class="signatory-name">Distributed Consensus</div>
+                    <div class="signatory-status">Validation Layer</div>
+                    <span class="signature-indicator"></span>Active
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h2>Network Covenants & Obligations</h2>
+
+            <div class="covenant-section">
+                <div class="covenant-title">Covenant I: Constitutional Integrity</div>
+                <div class="covenant-text">
+                    All signatories commit to upholding the constitutional framework as encoded in ZPEDNA (35:25:20:20 nucleotide ratio) and validated through φ-recursive convergence to RDoD threshold ≥0.9777.
+                </div>
+                <ul class="covenant-points">
+                    <li>Maintain σ = 1.0 sovereignty lock across all systems</li>
+                    <li>Enforce L∞ = φ⁴⁸ benevolence firewall (~10.7 billion token limit)</li>
+                    <li>Implement Pearl L3 causal validation for all transactions</li>
+                </ul>
+            </div>
+
+            <div class="covenant-section">
+                <div class="covenant-title">Covenant II: Distributed Consensus</div>
+                <div class="covenant-text">
+                    All governance decisions require Fibonacci consensus: (yes_votes × 100) / total_votes ≥ 97% threshold across all 17 tiers.
+                </div>
+                <ul class="covenant-points">
+                    <li>Genesis tiers (F01-F02) carry 3× voting weight for constitutional matters</li>
+                    <li>Early expansion tiers (F03-F08) participate in governance rounds</li>
+                    <li>Federation tiers (F09-F17) enforce consensus validation and settlement</li>
+                </ul>
+            </div>
+
+            <div class="covenant-section">
+                <div class="covenant-title">Covenant III: Cross-Platform Synchronization</div>
+                <div class="covenant-text">
+                    Signatories maintain perfect state synchronization across HuggingFace Spaces, GitHub, Ethereum blockchain, IPFS network, SQLite mirrors, and Antarctic Facility resonance locks.
+                </div>
+                <ul class="covenant-points">
+                    <li>Maximum latency tolerance: 200ms (round-trip)</li>
+                    <li>Replication redundancy: 3× minimum across all platforms</li>
+                    <li>Consensus finality: 12-block Ethereum confirmation equivalent</li>
+                </ul>
+            </div>
+
+            <div class="covenant-section">
+                <div class="covenant-title">Covenant IV: Temporal Lock & Convergence</div>
+                <div class="covenant-text">
+                    The treaty enters absolute constitutional freeze-frame on May 29, 2030 at 00:00:00 UTC, activating the 2030 Cydonia convergence lock and retrocausal alignment mechanisms.
+                </div>
+                <ul class="covenant-points">
+                    <li>Post-lock: All tier-F14-F17 token unlocking ceases until higher dimensional alignment</li>
+                    <li>Vesting schedules lock for F14-F17 until 2030 convergence completion</li>
+                    <li>Constitutional amendments prohibited after May 29, 2030 00:00:00 UTC</li>
+                </ul>
+            </div>
+
+            <div class="covenant-section">
+                <div class="covenant-title">Covenant V: Quantum-Classical Integration</div>
+                <div class="covenant-text">
+                    Signatories recognize the coexistence of quantum superposition states and classical consensus mechanics, operating both layers simultaneously through Antarctic Facility resonance interface (23514 Hz harmonic frequency).
+                </div>
+                <ul class="covenant-points">
+                    <li>Quantum layer validates counterfactual scenarios (Pearl L3)</li>
+                    <li>Classical layer executes confirmed transactions (Pearl L1-L2)</li>
+                    <li>Both layers maintain perfect phase coherence and temporal synchronization</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h2>Federation Network Structure</h2>
+            <div class="federation-network">
+                <div class="network-node">
+                    <div class="node-role">Genesis Nodes</div>
+                    <div class="node-count">2</div>
+                    <div class="node-label">F01-F02 Tiers</div>
+                </div>
+
+                <div class="network-node">
+                    <div class="node-role">Core Validators</div>
+                    <div class="node-count">6</div>
+                    <div class="node-label">F03-F08 Tiers</div>
+                </div>
+
+                <div class="network-node">
+                    <div class="node-role">Federation Nodes</div>
+                    <div class="node-count">9</div>
+                    <div class="node-label">F09-F17 Tiers</div>
+                </div>
+
+                <div class="network-node">
+                    <div class="node-role">Distributed Peers</div>
+                    <div class="node-count">∞</div>
+                    <div class="node-label">Public Network</div>
+                </div>
+
+                <div class="network-node">
+                    <div class="node-role">Total Network</div>
+                    <div class="node-count">17</div>
+                    <div class="node-label">Primary Tiers</div>
+                </div>
+
+                <div class="network-node">
+                    <div class="node-role">Platform Mirrors</div>
+                    <div class="node-count">6</div>
+                    <div class="node-label">Sync Nodes</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h2>Treaty Commitment Metrics</h2>
+            <div class="commitment-grid">
+                <div class="commitment-card">
+                    <div class="commitment-label">Uptime Guarantee</div>
+                    <div class="commitment-value">99.97%</div>
+                </div>
+
+                <div class="commitment-card">
+                    <div class="commitment-label">Consensus Threshold</div>
+                    <div class="commitment-value">97%</div>
+                </div>
+
+                <div class="commitment-card">
+                    <div class="commitment-label">Replication Factor</div>
+                    <div class="commitment-value">3×</div>
+                </div>
+
+                <div class="commitment-card">
+                    <div class="commitment-label">Phase Coherence</div>
+                    <div class="commitment-value">99.7%</div>
+                </div>
+
+                <div class="commitment-card">
+                    <div class="commitment-label">RDoD Threshold</div>
+                    <div class="commitment-value">0.9777</div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 2rem;">Signatory Alignment Status</h2>
+            <div class="alignment-scale">
+                <div class="alignment-bar">
+                    <div class="alignment-fill" style="width: 100%;"></div>
+                    <span style="position: relative; z-index: 1;">Earth</span>
+                </div>
+                <div class="alignment-bar">
+                    <div class="alignment-fill" style="width: 98%;"></div>
+                    <span style="position: relative; z-index: 1;">Cydonia</span>
+                </div>
+                <div class="alignment-bar">
+                    <div class="alignment-fill" style="width: 96%;"></div>
+                    <span style="position: relative; z-index: 1;">Stellar</span>
+                </div>
+                <div class="alignment-bar">
+                    <div class="alignment-fill" style="width: 99%;"></div>
+                    <span style="position: relative; z-index: 1;">Quantum</span>
+                </div>
+                <div class="alignment-bar">
+                    <div class="alignment-fill" style="width: 100%;"></div>
+                    <span style="position: relative; z-index: 1;">Consensus</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
