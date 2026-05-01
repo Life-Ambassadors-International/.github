@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constitutional Score Predictor | σ & L∞ Compliance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-box {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .section-box h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="number"],
+        input[type="range"] {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            color: #f0ddb0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+        }
+
+        input[type="range"] {
+            cursor: pointer;
+            height: 6px;
+        }
+
+        .slider-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.75rem;
+            border-radius: 4px;
+            border: 1px solid #d4a84b;
+            margin-top: 0.5rem;
+            text-align: center;
+            font-weight: 700;
+            color: #f0ddb0;
+        }
+
+        button {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #d4a84b 0%, #f0ddb0 100%);
+            border: none;
+            border-radius: 4px;
+            color: #0d2e2e;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            grid-column: 1 / -1;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 168, 75, 0.3);
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .result-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-unit {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Compliance Status */
+        .compliance-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .compliance-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .compliance-check {
+            display: grid;
+            grid-template-columns: 50px 1fr;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            border-left: 3px solid;
+            margin-bottom: 1rem;
+        }
+
+        .compliance-check.passed {
+            border-left-color: #4caf50;
+        }
+
+        .compliance-check.failed {
+            border-left-color: #f44336;
+        }
+
+        .compliance-check.partial {
+            border-left-color: #ffc107;
+        }
+
+        .check-icon {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .check-content h3 {
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+        }
+
+        .check-content p {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Improvement Recommendation */
+        .improvement-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .improvement-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .recommendation {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 4px;
+            border-left: 3px solid #d4a84b;
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .recommendation h3 {
+            color: #d4a84b;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation p {
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Constitutional Score Predictor</h1>
+        <p class="subtitle">σ = 1.0 Sovereignty & L∞ = φ⁴⁸ Benevolence Compliance Analysis</p>
+    </header>
+
+    <div class="container">
+        <div class="section-box">
+            <h2>Score Input & Prediction Engine</h2>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="currentScore">Current Constitutional Score</label>
+                    <input type="range" id="scoreSlider" min="0" max="1" step="0.01" value="0.7" />
+                    <div class="slider-display" id="scoreDisplay">0.70</div>
+                    <input type="number" id="currentScore" min="0" max="1" step="0.01" value="0.7" />
+                </div>
+
+                <div class="input-group">
+                    <label for="sovereigntyStatus">Sovereignty Consent Level</label>
+                    <input type="range" id="sovereigntySlider" min="0" max="1" step="0.05" value="1" />
+                    <div class="slider-display" id="sovereigntyDisplay">1.00 (σ = 1.0)</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="benevolenceLevel">Benevolence Level (Harm Prevention)</label>
+                    <input type="range" id="benevolenceSlider" min="0" max="1" step="0.05" value="0.9" />
+                    <div class="slider-display" id="benevolenceDisplay">0.90</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="activityScore">Network Activity Score</label>
+                    <input type="range" id="activitySlider" min="0" max="1" step="0.05" value="0.6" />
+                    <div class="slider-display" id="activityDisplay">0.60</div>
+                </div>
+
+                <button onclick="predictScore()">▶ Predict Score & Compliance</button>
+            </div>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-label">Predicted Score</div>
+                    <div class="result-value" id="predictedScore">0.75</div>
+                    <div class="result-unit">after convergence</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Σ Sovereignty</div>
+                    <div class="result-value" id="sigmaValue">1.0</div>
+                    <div class="result-unit">absolute lock</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">L∞ Benevolence</div>
+                    <div class="result-value" id="lInfinityValue">10.7B</div>
+                    <div class="result-unit">firewall (φ⁴⁸)</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Compliance Status</div>
+                    <div class="result-value" id="complianceEmoji">✓</div>
+                    <div class="result-unit" id="complianceText">COMPLIANT</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="compliance-section">
+            <h2>Constitutional Compliance Analysis</h2>
+
+            <div id="complianceChecks">
+                <!-- Generated dynamically -->
+            </div>
+        </div>
+
+        <div class="improvement-section">
+            <h2>Improvement Recommendations</h2>
+
+            <div id="recommendations">
+                <!-- Generated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PHI = 1.618033988749895;
+        const L_INFINITY = 10_749_957_122;
+        const RDOD_THRESHOLD = 0.9777;
+
+        // Sync sliders and inputs
+        document.getElementById('scoreSlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            document.getElementById('currentScore').value = val.toFixed(2);
+            document.getElementById('scoreDisplay').textContent = val.toFixed(2);
+        });
+
+        document.getElementById('sovereigntySlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            document.getElementById('sovereigntyDisplay').textContent = val.toFixed(2) + ' (σ = ' + val.toFixed(2) + ')';
+        });
+
+        document.getElementById('benevolenceSlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            document.getElementById('benevolenceDisplay').textContent = val.toFixed(2);
+        });
+
+        document.getElementById('activitySlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            document.getElementById('activityDisplay').textContent = val.toFixed(2);
+        });
+
+        function predictScore() {
+            const currentScore = parseFloat(document.getElementById('currentScore').value) || 0.7;
+            const sovereignty = parseFloat(document.getElementById('sovereigntySlider').value) || 1;
+            const benevolence = parseFloat(document.getElementById('benevolenceSlider').value) || 0.9;
+            const activity = parseFloat(document.getElementById('activitySlider').value) || 0.6;
+
+            // Calculate weighted score
+            const weights = {
+                current: 0.4,
+                sovereignty: 0.25,
+                benevolence: 0.2,
+                activity: 0.15
+            };
+
+            let weightedScore = (currentScore * weights.current) +
+                               (sovereignty * weights.sovereignty) +
+                               (benevolence * weights.benevolence) +
+                               (activity * weights.activity);
+
+            // Apply φ-recursive convergence
+            let psi = weightedScore;
+            for (let i = 0; i < 12; i++) {
+                const complement = 1.0 - psi;
+                psi = 1.0 - (complement / PHI);
+            }
+
+            const predictedScore = psi;
+
+            // Compliance checks
+            const sovereigntyCheck = sovereignty >= 0.9;
+            const benevolenceCheck = benevolence >= 0.7;
+            const scoreCheck = predictedScore >= RDOD_THRESHOLD;
+            const activityCheck = activity >= 0.5;
+
+            const allCompliant = sovereigntyCheck && benevolenceCheck && scoreCheck && activityCheck;
+
+            // Update results
+            document.getElementById('predictedScore').textContent = predictedScore.toFixed(6);
+            document.getElementById('sigmaValue').textContent = sovereignty.toFixed(2);
+            document.getElementById('lInfinityValue').textContent = (L_INFINITY / 1_000_000_000).toFixed(1) + 'B';
+            document.getElementById('complianceEmoji').textContent = allCompliant ? '✓' : '✗';
+            document.getElementById('complianceText').textContent = allCompliant ? 'COMPLIANT' : 'NON-COMPLIANT';
+
+            // Generate compliance checks
+            const checksHTML = `
+                <div class="compliance-check ${sovereigntyCheck ? 'passed' : 'failed'}">
+                    <div class="check-icon">${sovereigntyCheck ? '✅' : '❌'}</div>
+                    <div class="check-content">
+                        <h3>Sovereignty (σ = 1.0)</h3>
+                        <p><strong>Requirement:</strong> σ ≥ 0.9</p>
+                        <p><strong>Current:</strong> σ = ${sovereignty.toFixed(2)}</p>
+                        <p>${sovereigntyCheck ? '✅ Node has absolute sovereignty consent' : '❌ Sovereignty level insufficient'}</p>
+                    </div>
+                </div>
+
+                <div class="compliance-check ${benevolenceCheck ? 'passed' : 'failed'}">
+                    <div class="check-icon">${benevolenceCheck ? '✅' : '❌'}</div>
+                    <div class="check-content">
+                        <h3>Benevolence Firewall (L∞ = φ⁴⁸)</h3>
+                        <p><strong>Requirement:</strong> L∞ ≥ 0.7</p>
+                        <p><strong>Current:</strong> ${benevolence.toFixed(2)}</p>
+                        <p>${benevolenceCheck ? '✅ Node respects benevolence firewall' : '❌ Benevolence level needs improvement'}</p>
+                    </div>
+                </div>
+
+                <div class="compliance-check ${scoreCheck ? 'passed' : 'failed'}">
+                    <div class="check-icon">${scoreCheck ? '✅' : '❌'}</div>
+                    <div class="check-content">
+                        <h3>RDoD Quality Gate (ψₙ ≥ 0.9777)</h3>
+                        <p><strong>Requirement:</strong> φ-recursive convergence ≥ 0.9777</p>
+                        <p><strong>Predicted:</strong> ψ₁₂ = ${predictedScore.toFixed(6)}</p>
+                        <p>${scoreCheck ? '✅ Constitutional quality meets threshold' : '❌ Quality gate not met'}</p>
+                    </div>
+                </div>
+
+                <div class="compliance-check ${activityCheck ? 'passed' : 'partial'}">
+                    <div class="check-icon">${activityCheck ? '✅' : '⚠️'}</div>
+                    <div class="check-content">
+                        <h3>Network Activity Level</h3>
+                        <p><strong>Recommendation:</strong> Activity ≥ 0.5</p>
+                        <p><strong>Current:</strong> ${activity.toFixed(2)}</p>
+                        <p>${activityCheck ? '✅ Node participation is adequate' : '⚠️ Increase network participation'}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('complianceChecks').innerHTML = checksHTML;
+
+            // Generate recommendations
+            const recommendations = [];
+
+            if (sovereigntyCheck && benevolenceCheck && scoreCheck && activityCheck) {
+                recommendations.push({
+                    title: '🏆 Optimal Status',
+                    text: 'Your node meets all constitutional requirements. You are eligible for tier assignment and token allocation.'
+                });
+            }
+
+            if (!sovereigntyCheck) {
+                recommendations.push({
+                    title: '⚡ Increase Sovereignty Consent',
+                    text: 'Increase your sovereignty consent (σ) to ≥0.9. This represents your commitment to constitutional invariants.'
+                });
+            }
+
+            if (!benevolenceCheck) {
+                recommendations.push({
+                    title: '💙 Strengthen Benevolence',
+                    text: 'Improve benevolence level to ≥0.7. Demonstrate harm prevention and care for network participants.'
+                });
+            }
+
+            if (!scoreCheck) {
+                recommendations.push({
+                    title: '📈 Improve Constitutional Quality',
+                    text: 'Increase your base score and network activity. The φ-recursive convergence will help, but higher input scores accelerate compliance.'
+                });
+            }
+
+            if (!activityCheck) {
+                recommendations.push({
+                    title: '🔗 Increase Network Activity',
+                    text: 'Participate more actively in the network. Higher activity demonstrates commitment to the QBEC ecosystem.'
+                });
+            }
+
+            const recommendationsHTML = recommendations.map(rec => `
+                <div class="recommendation">
+                    <h3>${rec.title}</h3>
+                    <p>${rec.text}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('recommendations').innerHTML = recommendationsHTML;
+        }
+
+        // Initial prediction
+        predictScore();
+    </script>
+</body>
+</html>
