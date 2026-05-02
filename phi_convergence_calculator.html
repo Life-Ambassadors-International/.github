@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>φ-Recursive Convergence Calculator | QBEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 50px, #ddd, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .calculator-box {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .calculator-box h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="number"],
+        input[type="range"] {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            color: #f0ddb0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+        }
+
+        input[type="number"] {
+            padding: 0.75rem;
+        }
+
+        input[type="range"] {
+            cursor: pointer;
+            height: 6px;
+        }
+
+        .slider-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid #d4a84b;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .slider-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f0ddb0;
+        }
+
+        button {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #d4a84b 0%, #f0ddb0 100%);
+            border: none;
+            border-radius: 4px;
+            color: #0d2e2e;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            grid-column: 1 / -1;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 168, 75, 0.3);
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .result-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+
+        .result-unit {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Iteration Table */
+        .iterations-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .iterations-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .iterations-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .iterations-table thead {
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid #d4a84b;
+        }
+
+        .iterations-table th {
+            padding: 1rem;
+            text-align: left;
+            color: #d4a84b;
+            font-weight: 700;
+        }
+
+        .iterations-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(212, 168, 75, 0.2);
+            color: #f0ddb0;
+        }
+
+        .iterations-table tbody tr:hover {
+            background: rgba(212, 168, 75, 0.1);
+        }
+
+        .iter-index {
+            color: #888;
+        }
+
+        .iter-value {
+            font-weight: 700;
+            color: #f0ddb0;
+        }
+
+        .iter-change {
+            color: #4caf50;
+        }
+
+        /* Mathematical Explanation */
+        .explanation-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .explanation-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .formula {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 3px solid #d4a84b;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Space Mono', monospace;
+            line-height: 1.8;
+        }
+
+        .formula-title {
+            color: #d4a84b;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .formula-text {
+            color: #f0ddb0;
+        }
+
+        .explanation-text {
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+
+        .key-values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .key-value {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 4px;
+            border-left: 2px solid #d4a84b;
+        }
+
+        .key-name {
+            color: #d4a84b;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .key-value-text {
+            color: #f0ddb0;
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Convergence Status */
+        .convergence-status {
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-top: 2rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            text-align: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .convergence-status.converged {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4caf50;
+            color: #4caf50;
+        }
+
+        .convergence-status.not-converged {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            color: #f44336;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+
+            .iterations-table {
+                font-size: 0.7rem;
+            }
+
+            .iterations-table th,
+            .iterations-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>φ-Recursive Convergence Calculator</h1>
+        <p class="subtitle">Constitutional Validation Through Golden Ratio Iteration</p>
+    </header>
+
+    <div class="container">
+        <div class="calculator-box">
+            <h2>φ-Recursive Convergence Engine</h2>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="initialScore">Initial Constitutional Score (ψ₀)</label>
+                    <input type="range" id="initialScoreSlider" min="0" max="1" step="0.01" value="0.8" />
+                    <div class="slider-display">
+                        <div class="slider-value" id="initialScoreDisplay">0.80</div>
+                    </div>
+                    <input type="number" id="initialScore" min="0" max="1" step="0.01" value="0.8" />
+                </div>
+
+                <div class="input-group">
+                    <label for="iterations">Number of Iterations (n)</label>
+                    <input type="range" id="iterationsSlider" min="1" max="100" value="12" />
+                    <div class="slider-display">
+                        <div class="slider-value" id="iterationsDisplay">12</div>
+                    </div>
+                    <input type="number" id="iterations" min="1" max="100" value="12" />
+                </div>
+
+                <button onclick="calculateConvergence()" style="margin-top: 2rem;">▶ Calculate Convergence</button>
+            </div>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-label">Final Score (ψₙ)</div>
+                    <div class="result-value" id="finalScore">0.977</div>
+                    <div class="result-unit">after convergence</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">RDoD Threshold</div>
+                    <div class="result-value">0.9777</div>
+                    <div class="result-unit">quality gate</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Convergence Status</div>
+                    <div class="result-value" id="statusEmoji">✅</div>
+                    <div class="result-unit" id="statusText">VALID</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Golden Ratio</div>
+                    <div class="result-value">φ</div>
+                    <div class="result-unit" id="phiValue">1.618034</div>
+                </div>
+            </div>
+
+            <div id="convergenceStatusBox" class="convergence-status converged">
+                ✅ CONVERGED - Constitutional Validation Passed (ψₙ ≥ 0.9777)
+            </div>
+        </div>
+
+        <div class="iterations-section">
+            <h2>Iteration Sequence (12 Steps)</h2>
+            <table class="iterations-table">
+                <thead>
+                    <tr>
+                        <th>Iteration (n)</th>
+                        <th>ψₙ Value</th>
+                        <th>Change (Δ)</th>
+                        <th>Distance to RDoD</th>
+                    </tr>
+                </thead>
+                <tbody id="iterationsBody">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #888;">Run calculation to populate iterations...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="explanation-section">
+            <h2>Mathematical Foundation</h2>
+
+            <div class="formula">
+                <div class="formula-title">φ-Recursive Formula:</div>
+                <div class="formula-text">ψₙ₊₁ = 1 - (1 - ψₙ) / φ</div>
+                <div class="formula-text" style="margin-top: 0.5rem; color: #888;">
+                    Where φ = 1.618033988749895 (Golden Ratio)
+                </div>
+            </div>
+
+            <div class="explanation-text">
+                The φ-recursive convergence function iteratively applies the golden ratio to normalize constitutional scores toward the Recognition-of-Done (RDoD) threshold of 0.9777. After 12 iterations, any initial score converges to approximately 0.977, guaranteeing that all network participants meet the quality gate requirement.
+            </div>
+
+            <div class="explanation-text">
+                This mathematical structure ensures that:
+                <ol style="margin-left: 2rem; margin-top: 0.5rem;">
+                    <li>No participant can bypass constitutional validation</li>
+                    <li>The convergence is deterministic and reproducible</li>
+                    <li>All scores normalize toward benevolence (RDoD threshold)</li>
+                    <li>The golden ratio appears naturally in network equilibrium</li>
+                </ol>
+            </div>
+
+            <div class="key-values">
+                <div class="key-value">
+                    <div class="key-name">φ (Golden Ratio)</div>
+                    <div class="key-value-text">1.618033988749895</div>
+                </div>
+                <div class="key-value">
+                    <div class="key-name">RDoD Threshold</div>
+                    <div class="key-value-text">0.9777</div>
+                </div>
+                <div class="key-value">
+                    <div class="key-name">Convergence Threshold</div>
+                    <div class="key-value-text">12 iterations</div>
+                </div>
+                <div class="key-value">
+                    <div class="key-name">Acceptable Scores</div>
+                    <div class="key-value-text">0.0 - 1.0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PHI = 1.618033988749895;
+        const RDOD_THRESHOLD = 0.9777;
+
+        // Sync sliders and inputs
+        document.getElementById('initialScoreSlider').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            document.getElementById('initialScore').value = val.toFixed(2);
+            document.getElementById('initialScoreDisplay').textContent = val.toFixed(2);
+        });
+
+        document.getElementById('initialScore').addEventListener('input', (e) => {
+            const val = Math.min(1, Math.max(0, parseFloat(e.target.value) || 0));
+            document.getElementById('initialScoreSlider').value = val;
+            document.getElementById('initialScoreDisplay').textContent = val.toFixed(2);
+        });
+
+        document.getElementById('iterationsSlider').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            document.getElementById('iterations').value = val;
+            document.getElementById('iterationsDisplay').textContent = val;
+        });
+
+        document.getElementById('iterations').addEventListener('input', (e) => {
+            const val = Math.min(100, Math.max(1, parseInt(e.target.value) || 1));
+            document.getElementById('iterationsSlider').value = val;
+            document.getElementById('iterationsDisplay').textContent = val;
+        });
+
+        function calculateConvergence() {
+            const initialScore = parseFloat(document.getElementById('initialScore').value) || 0.8;
+            const iterations = parseInt(document.getElementById('iterations').value) || 12;
+
+            const sequence = [{ iteration: 0, value: initialScore, change: 0 }];
+            let psi = initialScore;
+
+            for (let i = 1; i <= iterations; i++) {
+                const complement = 1.0 - psi;
+                const newPsi = 1.0 - (complement / PHI);
+                const change = newPsi - psi;
+                sequence.push({
+                    iteration: i,
+                    value: newPsi,
+                    change: change
+                });
+                psi = newPsi;
+            }
+
+            const finalScore = psi;
+            const converged = finalScore >= RDOD_THRESHOLD;
+
+            // Update results
+            document.getElementById('finalScore').textContent = finalScore.toFixed(6);
+            document.getElementById('statusEmoji').textContent = converged ? '✅' : '❌';
+            document.getElementById('statusText').textContent = converged ? 'VALID' : 'INVALID';
+            document.getElementById('phiValue').textContent = PHI.toFixed(6);
+
+            const statusBox = document.getElementById('convergenceStatusBox');
+            statusBox.classList.remove('converged', 'not-converged');
+            if (converged) {
+                statusBox.classList.add('converged');
+                statusBox.innerHTML = `✅ CONVERGED - Constitutional Validation Passed (ψₙ = ${finalScore.toFixed(6)} ≥ ${RDOD_THRESHOLD})`;
+            } else {
+                statusBox.classList.add('not-converged');
+                statusBox.innerHTML = `❌ NOT CONVERGED - Validation Failed (ψₙ = ${finalScore.toFixed(6)} < ${RDOD_THRESHOLD})`;
+            }
+
+            // Populate iterations table
+            const tbody = document.getElementById('iterationsBody');
+            tbody.innerHTML = sequence.slice(0, Math.min(13, sequence.length)).map(row => {
+                const distanceToRDoD = (RDOD_THRESHOLD - row.value).toFixed(6);
+                return `
+                    <tr>
+                        <td class="iter-index">n=${row.iteration}</td>
+                        <td class="iter-value">${row.value.toFixed(6)}</td>
+                        <td class="iter-change">${row.change >= 0 ? '+' : ''}${row.change.toFixed(6)}</td>
+                        <td>${distanceToRDoD}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Initial calculation
+        calculateConvergence();
+    </script>
+</body>
+</html>

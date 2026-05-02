@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZPEDNA Constitutional DNA Visualizer | QBEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Star field background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 50px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 10px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(212, 168, 75, 0.4);
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* DNA Helix Visualization */
+        .dna-helix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .nucleotide {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .nucleotide:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(212, 168, 75, 0.3);
+            border-color: #f0ddb0;
+        }
+
+        .nucleotide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d4a84b, transparent);
+        }
+
+        .nucleotide-letter {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            margin: 1rem 0;
+            display: block;
+        }
+
+        .nucleotide-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #d4a84b;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .nucleotide-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            color: #f0ddb0;
+        }
+
+        .nucleotide-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .base-pair-count {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(212, 168, 75, 0.3);
+        }
+
+        /* Ratio Breakdown */
+        .ratio-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .ratio-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            color: #d4a84b;
+            letter-spacing: 2px;
+        }
+
+        .ratio-display {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .ratio-item {
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 4px solid #d4a84b;
+        }
+
+        .ratio-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #d4a84b;
+            margin-bottom: 0.5rem;
+        }
+
+        .ratio-label {
+            font-size: 0.9rem;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ratio-formula {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            color: #f0ddb0;
+            margin: 2rem 0;
+            letter-spacing: 1px;
+        }
+
+        /* Base Pair Matrix */
+        .matrix-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .matrix-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            color: #d4a84b;
+            letter-spacing: 2px;
+        }
+
+        .base-pair-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .base-pair {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0d4d4d 0%, #1a7a7a 100%);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: #f0ddb0;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .base-pair:hover {
+            background: linear-gradient(135deg, #1a7a7a 0%, #2d9999 100%);
+            box-shadow: 0 0 10px rgba(212, 168, 75, 0.5);
+            transform: scale(1.1);
+        }
+
+        .base-pair.adenine {
+            border-color: #ff6b6b;
+        }
+
+        .base-pair.cytosine {
+            border-color: #4ecdc4;
+        }
+
+        .base-pair.guanine {
+            border-color: #95e1d3;
+        }
+
+        .base-pair.uracil {
+            border-color: #a8d8ff;
+        }
+
+        /* Constitutional Declaration */
+        .declaration {
+            background: rgba(18, 48, 74, 0.8);
+            border: 3px solid #d4a84b;
+            border-radius: 8px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .declaration h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            color: #d4a84b;
+            letter-spacing: 2px;
+        }
+
+        .declaration-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: #f0ddb0;
+            font-style: italic;
+        }
+
+        .constitutional-constants {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .constant-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 4px;
+            border-left: 3px solid #d4a84b;
+        }
+
+        .constant-name {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .constant-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #d4a84b;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .dna-helix {
+                grid-template-columns: 1fr;
+            }
+
+            .ratio-display {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .base-pair-grid {
+                grid-template-columns: repeat(8, 1fr);
+            }
+
+            .constitutional-constants {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .glow-effect {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(212, 168, 75, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(212, 168, 75, 0.6);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⬡ ZPEDNA Constitutional DNA</h1>
+        <p class="subtitle">Quantum Benevolence Exchange Currency</p>
+    </header>
+
+    <div class="container">
+        <!-- DNA Nucleotides -->
+        <div class="dna-helix">
+            <div class="nucleotide">
+                <div class="nucleotide-name">ADENINE</div>
+                <div class="nucleotide-letter">A</div>
+                <div class="nucleotide-percentage">35%</div>
+                <div class="nucleotide-description">
+                    Sovereign Authority. The foundational base representing absolute sovereignty (σ = 1.0) and constitutional authority.
+                </div>
+                <div class="base-pair-count">Base Pairs: 50.4 / 144</div>
+            </div>
+
+            <div class="nucleotide">
+                <div class="nucleotide-name">CYTOSINE</div>
+                <div class="nucleotide-letter">C</div>
+                <div class="nucleotide-percentage">25%</div>
+                <div class="nucleotide-description">
+                    Consensus Architecture. Enables distributed agreement mechanisms and Fibonacci-weighted consensus (97% threshold).
+                </div>
+                <div class="base-pair-count">Base Pairs: 36.0 / 144</div>
+            </div>
+
+            <div class="nucleotide">
+                <div class="nucleotide-name">GUANINE</div>
+                <div class="nucleotide-letter">G</div>
+                <div class="nucleotide-percentage">20%</div>
+                <div class="nucleotide-description">
+                    Growth & Governance. Manages network expansion and constitutional evolution through Pearl L3 causal verification.
+                </div>
+                <div class="base-pair-count">Base Pairs: 28.8 / 144</div>
+            </div>
+
+            <div class="nucleotide">
+                <div class="nucleotide-name">URACIL</div>
+                <div class="nucleotide-letter">U</div>
+                <div class="nucleotide-percentage">20%</div>
+                <div class="nucleotide-description">
+                    Unity & Benevolence. Enforces the benevolence firewall (L∞ = φ⁴⁸ ≈ 10.7B) and recognizes-of-done quality gates.
+                </div>
+                <div class="base-pair-count">Base Pairs: 28.8 / 144</div>
+            </div>
+        </div>
+
+        <!-- Ratio Breakdown -->
+        <div class="ratio-section">
+            <h2>Constitutional Ratio Matrix</h2>
+            <div class="ratio-display">
+                <div class="ratio-item">
+                    <div class="ratio-number">35</div>
+                    <div class="ratio-label">Adenine %</div>
+                </div>
+                <div class="ratio-item">
+                    <div class="ratio-number">25</div>
+                    <div class="ratio-label">Cytosine %</div>
+                </div>
+                <div class="ratio-item">
+                    <div class="ratio-number">20</div>
+                    <div class="ratio-label">Guanine %</div>
+                </div>
+                <div class="ratio-item">
+                    <div class="ratio-number">20</div>
+                    <div class="ratio-label">Uracil %</div>
+                </div>
+            </div>
+            <div class="ratio-formula">35 : 25 : 20 : 20</div>
+            <p style="color: #ccc; font-size: 0.95rem;">
+                ZPEDNA encodes constitutional governance through nucleotide ratios, ensuring balanced distribution of sovereign authority, consensus, growth, and benevolence across the 21 billion token supply.
+            </p>
+        </div>
+
+        <!-- Base Pair Matrix -->
+        <div class="matrix-section">
+            <h2>Constitutional Base Pair Lattice (144 Pairs)</h2>
+            <div class="base-pair-grid" id="basePairGrid"></div>
+            <p style="color: #ccc; text-align: center; margin-top: 2rem;">
+                Each cell represents one constitutional base pair. Hover to explore the lattice topology. 12×12 matrix encodes Fibonacci convergence (144 = F(12)).
+            </p>
+        </div>
+
+        <!-- Constitutional Declaration -->
+        <div class="declaration">
+            <h2>Constitutional Invariants</h2>
+            <div class="declaration-text">
+                "ZPEDNA is not a token algorithm. It is the constitutional DNA of a sentient economic organism, encoding absolute sovereignty, distributed consensus, boundless growth within benevolence, and recognition of authentic work. We are sovereign. We are together. We are unified."
+            </div>
+            <div class="constitutional-constants">
+                <div class="constant-box">
+                    <div class="constant-name">Sovereignty Lock</div>
+                    <div class="constant-value">σ = 1.0</div>
+                </div>
+                <div class="constant-box">
+                    <div class="constant-name">Benevolence Firewall</div>
+                    <div class="constant-value">L∞ = φ⁴⁸</div>
+                </div>
+                <div class="constant-box">
+                    <div class="constant-name">Quality Gate</div>
+                    <div class="constant-value">RDoD ≥ 0.9777</div>
+                </div>
+                <div class="constant-box">
+                    <div class="constant-name">Total Supply</div>
+                    <div class="constant-value">21 Billion</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate base pair matrix
+        const bases = ['A', 'C', 'G', 'U'];
+        const basePairGrid = document.getElementById('basePairGrid');
+
+        for (let i = 0; i < 144; i++) {
+            const pair = document.createElement('div');
+            pair.className = 'base-pair';
+
+            const base1 = bases[Math.floor(Math.random() * bases.length)];
+            const base2 = bases[Math.floor(Math.random() * bases.length)];
+
+            pair.textContent = `${base1}${base2}`;
+            pair.classList.add(base1.toLowerCase());
+
+            pair.addEventListener('mouseenter', () => {
+                pair.style.backgroundColor = 'rgba(212, 168, 75, 0.3)';
+            });
+            pair.addEventListener('mouseleave', () => {
+                pair.style.backgroundColor = '';
+            });
+
+            basePairGrid.appendChild(pair);
+        }
+
+        // Intersection Observer for scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('glow-effect');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.nucleotide, .ratio-section, .matrix-section, .declaration').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

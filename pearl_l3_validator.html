@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pearl L3 Causal Validator | QBEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-box {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .section-box h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="number"],
+        input[type="checkbox"],
+        select {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            color: #f0ddb0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+        }
+
+        button {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #d4a84b 0%, #f0ddb0 100%);
+            border: none;
+            border-radius: 4px;
+            color: #0d2e2e;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 168, 75, 0.3);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            text-transform: none;
+        }
+
+        /* Pearl L3 Hierarchy */
+        .hierarchy-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .hierarchy-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .hierarchy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .hierarchy-level {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+        }
+
+        .level-number {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #d4a84b;
+            margin-bottom: 0.5rem;
+        }
+
+        .level-name {
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .level-description {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .level-example {
+            background: rgba(212, 168, 75, 0.2);
+            padding: 0.75rem;
+            border-left: 2px solid #d4a84b;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #f0ddb0;
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .result-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-unit {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Validation Results */
+        .validation-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .validation-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .validation-item {
+            display: grid;
+            grid-template-columns: 50px 1fr;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            border-left: 3px solid;
+            margin-bottom: 1rem;
+        }
+
+        .validation-item.passed {
+            border-left-color: #4caf50;
+        }
+
+        .validation-item.failed {
+            border-left-color: #f44336;
+        }
+
+        .validation-item.warning {
+            border-left-color: #ffc107;
+        }
+
+        .validation-icon {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .validation-content h3 {
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+        }
+
+        .validation-content p {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .validation-status {
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-top: 2rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .validation-status.passed {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4caf50;
+            color: #4caf50;
+        }
+
+        .validation-status.failed {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            color: #f44336;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+
+            .hierarchy-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Pearl L3 Causal Validator</h1>
+        <p class="subtitle">Judea Pearl's Causal Hierarchy for QBEC Transactions</p>
+    </header>
+
+    <div class="container">
+        <div class="section-box">
+            <h2>Transaction Validation Inputs</h2>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="senderScore">Sender Constitutional Score</label>
+                    <input type="number" id="senderScore" min="0" max="1" step="0.01" value="0.8" />
+                </div>
+
+                <div class="input-group">
+                    <label for="recipientScore">Recipient Constitutional Score</label>
+                    <input type="number" id="recipientScore" min="0" max="1" step="0.01" value="0.8" />
+                </div>
+
+                <div class="input-group">
+                    <label for="transactionAmount">Transaction Amount (% of sender balance)</label>
+                    <input type="number" id="transactionAmount" min="0" max="100000" step="10" value="10" />
+                </div>
+
+                <div class="input-group">
+                    <label for="senderBalance">Sender Balance (wei equivalent)</label>
+                    <input type="number" id="senderBalance" min="0" step="1" value="1000000" />
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="senderConsent" checked />
+                    <label for="senderConsent" style="margin-bottom: 0;">Sender Sovereignty Consent (σ)</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="recipientConsent" checked />
+                    <label for="recipientConsent" style="margin-bottom: 0;">Recipient Sovereignty Consent (σ)</label>
+                </div>
+
+                <button onclick="validateTransaction()" style="grid-column: 1 / -1;">▶ Validate Transaction</button>
+            </div>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-label">Overall Status</div>
+                    <div class="result-value" id="overallStatus">✓</div>
+                    <div class="result-unit">validation result</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">L1 Association</div>
+                    <div class="result-value" id="l1Status">✓</div>
+                    <div class="result-unit">observational level</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">L2 Intervention</div>
+                    <div class="result-value" id="l2Status">✓</div>
+                    <div class="result-unit">causal level</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">L3 Counterfactual</div>
+                    <div class="result-value" id="l3Status">✓</div>
+                    <div class="result-unit">contrafactual level</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hierarchy-section">
+            <h2>Judea Pearl's Causal Hierarchy (L1-L3)</h2>
+
+            <div class="hierarchy-grid">
+                <div class="hierarchy-level">
+                    <div class="level-number">1</div>
+                    <div class="level-name">Association (Observation)</div>
+                    <div class="level-description">
+                        Are the sender and recipient's transfer histories consistent with constitutional invariants? Do their past transactions show benevolent alignment?
+                    </div>
+                    <div class="level-example">
+                        Check: Sovereignty consent verified? Constitutional score baseline met?
+                    </div>
+                </div>
+
+                <div class="hierarchy-level">
+                    <div class="level-number">2</div>
+                    <div class="level-name">Intervention (Causality)</div>
+                    <div class="level-description">
+                        What happens if we execute this transfer? Would the transaction cause harm exceeding the benevolence firewall (L∞ = φ⁴⁸)?
+                    </div>
+                    <div class="level-example">
+                        Check: Harm potential × amplification ≤ L∞? Network stability maintained?
+                    </div>
+                </div>
+
+                <div class="hierarchy-level">
+                    <div class="level-number">3</div>
+                    <div class="level-name">Counterfactual (What-If)</div>
+                    <div class="level-description">
+                        What would have happened if different parameters were used? Would alternative transaction conditions violate the constitution?
+                    </div>
+                    <div class="level-example">
+                        Check: RDoD validation (φ-recursive) passes? Constitutional quality ≥ 0.9777?
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="validation-section">
+            <h2>Validation Results</h2>
+
+            <div id="validationResults">
+                <div style="text-align: center; color: #888;">Run validation to see results...</div>
+            </div>
+
+            <div id="validationStatus" class="validation-status passed">
+                ✅ TRANSACTION APPROVED
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const L_INFINITY = 10_749_957_122;
+        const RDOD_THRESHOLD = 0.9777;
+        const PHI = 1.618033988749895;
+
+        function validateTransaction() {
+            const senderScore = parseFloat(document.getElementById('senderScore').value) || 0;
+            const recipientScore = parseFloat(document.getElementById('recipientScore').value) || 0;
+            const transactionAmount = parseFloat(document.getElementById('transactionAmount').value) || 0;
+            const senderBalance = parseFloat(document.getElementById('senderBalance').value) || 1;
+            const senderConsent = document.getElementById('senderConsent').checked;
+            const recipientConsent = document.getElementById('recipientConsent').checked;
+
+            // L1: Association - Constitutional history check
+            const l1_sovereigntyCheck = senderConsent && recipientConsent;
+            const l1_scoreCheck = senderScore >= 0.0 && recipientScore >= 0.0;
+            const l1_passed = l1_sovereigntyCheck && l1_scoreCheck;
+
+            // L2: Intervention - Benevolence firewall check
+            const harmPotential = transactionAmount;
+            const amplificationFactor = Math.max(1, 100 - senderScore * 100); // Higher score = lower risk
+            const totalHarm = harmPotential * (amplificationFactor / 100);
+            const l2_benevolenceCheck = totalHarm <= L_INFINITY;
+            const l2_passed = l2_benevolenceCheck;
+
+            // L3: Counterfactual - RDoD quality gate check
+            let psi = senderScore;
+            for (let i = 0; i < 12; i++) {
+                const complement = 1.0 - psi;
+                psi = 1.0 - (complement / PHI);
+            }
+            const l3_rdodCheck = psi >= RDOD_THRESHOLD;
+            const l3_passed = l3_rdodCheck;
+
+            // Overall validation
+            const overallPassed = l1_passed && l2_passed && l3_passed;
+
+            // Update display
+            document.getElementById('overallStatus').textContent = overallPassed ? '✓' : '✗';
+            document.getElementById('l1Status').textContent = l1_passed ? '✓' : '✗';
+            document.getElementById('l2Status').textContent = l2_passed ? '✓' : '✗';
+            document.getElementById('l3Status').textContent = l3_passed ? '✓' : '✗';
+
+            // Build validation results
+            const resultsHTML = `
+                <div class="validation-item ${l1_passed ? 'passed' : 'failed'}">
+                    <div class="validation-icon">${l1_passed ? '✅' : '❌'}</div>
+                    <div class="validation-content">
+                        <h3>L1 Association (Observational)</h3>
+                        <p><strong>Sovereignty Consent:</strong> Sender = ${senderConsent ? '✓' : '✗'}, Recipient = ${recipientConsent ? '✓' : '✗'}</p>
+                        <p><strong>Score Baseline:</strong> Sender = ${senderScore.toFixed(3)}, Recipient = ${recipientScore.toFixed(3)}</p>
+                        <p>${l1_passed ? '✅ Both parties have constitutional consent and valid scores' : '❌ Sovereignty consent or score requirements not met'}</p>
+                    </div>
+                </div>
+
+                <div class="validation-item ${l2_passed ? 'passed' : 'failed'}">
+                    <div class="validation-icon">${l2_passed ? '✅' : '❌'}</div>
+                    <div class="validation-content">
+                        <h3>L2 Intervention (Causal)</h3>
+                        <p><strong>Harm Potential:</strong> ${harmPotential.toFixed(2)}</p>
+                        <p><strong>Amplification Factor:</strong> ${amplificationFactor.toFixed(2)}</p>
+                        <p><strong>Total Harm:</strong> ${totalHarm.toFixed(2)} / ${L_INFINITY.toLocaleString()}</p>
+                        <p>${l2_passed ? '✅ Harm potential within benevolence firewall' : '❌ Harm potential exceeds firewall threshold'}</p>
+                    </div>
+                </div>
+
+                <div class="validation-item ${l3_passed ? 'passed' : 'failed'}">
+                    <div class="validation-icon">${l3_passed ? '✅' : '❌'}</div>
+                    <div class="validation-content">
+                        <h3>L3 Counterfactual (Constitutional Quality)</h3>
+                        <p><strong>φ-Recursive Convergence:</strong> Initial ψ = ${senderScore.toFixed(3)}</p>
+                        <p><strong>Final ψ₁₂:</strong> ${psi.toFixed(6)}</p>
+                        <p><strong>RDoD Threshold:</strong> ${RDOD_THRESHOLD}</p>
+                        <p>${l3_passed ? '✅ Constitutional quality meets RDoD requirement' : '❌ Constitutional quality below RDoD threshold'}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('validationResults').innerHTML = resultsHTML;
+
+            const statusEl = document.getElementById('validationStatus');
+            statusEl.classList.remove('passed', 'failed');
+            if (overallPassed) {
+                statusEl.classList.add('passed');
+                statusEl.innerHTML = '✅ TRANSACTION APPROVED - All Pearl L3 checks passed';
+            } else {
+                statusEl.classList.add('failed');
+                statusEl.innerHTML = '❌ TRANSACTION REJECTED - One or more validation layers failed';
+            }
+        }
+
+        // Initial validation
+        validateTransaction();
+    </script>
+</body>
+</html>

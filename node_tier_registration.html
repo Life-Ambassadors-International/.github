@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Tier Registration | QBEC Network</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .form-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            color: #f0ddb0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+        }
+
+        button {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #d4a84b 0%, #f0ddb0 100%);
+            border: none;
+            border-radius: 4px;
+            color: #0d2e2e;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 168, 75, 0.3);
+        }
+
+        /* Tier Selection Grid */
+        .tier-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tier-button {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #d4a84b;
+            border-radius: 4px;
+            color: #f0ddb0;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .tier-button:hover {
+            background: rgba(212, 168, 75, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .tier-button.selected {
+            background: rgba(212, 168, 75, 0.4);
+            border-color: #f0ddb0;
+            box-shadow: 0 0 15px rgba(212, 168, 75, 0.5);
+        }
+
+        .tier-info {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        /* Registration Table */
+        .registry-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .registry-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .registry-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .registry-table thead {
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid #d4a84b;
+        }
+
+        .registry-table th {
+            padding: 1rem;
+            text-align: left;
+            color: #d4a84b;
+            font-weight: 700;
+        }
+
+        .registry-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(212, 168, 75, 0.2);
+            color: #f0ddb0;
+        }
+
+        .registry-table tbody tr:hover {
+            background: rgba(212, 168, 75, 0.1);
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 3px;
+            background: rgba(212, 168, 75, 0.3);
+            border: 1px solid #d4a84b;
+            font-weight: 700;
+        }
+
+        .status-active {
+            color: #4caf50;
+        }
+
+        .status-pending {
+            color: #ffc107;
+        }
+
+        /* Registration Summary */
+        .summary-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .summary-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .summary-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-unit {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tier-selection {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .registry-table {
+                font-size: 0.7rem;
+            }
+
+            .registry-table th,
+            .registry-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⬡ Node Tier Registration</h1>
+        <p class="subtitle">Fibonacci Network Participation & Allocation Assignment</p>
+    </header>
+
+    <div class="container">
+        <div class="form-section">
+            <h2>Node Registration Form</h2>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nodeName">Node Name</label>
+                    <input type="text" id="nodeName" placeholder="e.g., Guardian-Alpha-01" />
+                </div>
+
+                <div class="form-group">
+                    <label for="nodeAddress">Ethereum Address (0x...)</label>
+                    <input type="text" id="nodeAddress" placeholder="0x..." />
+                </div>
+
+                <div class="form-group">
+                    <label for="operatorEmail">Operator Email</label>
+                    <input type="email" id="operatorEmail" placeholder="operator@domain.com" />
+                </div>
+
+                <div class="form-group">
+                    <label for="registrationDate">Registration Date</label>
+                    <input type="date" id="registrationDate" />
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label>Select Fibonacci Tier (F1-F17)</label>
+                <div class="tier-selection" id="tierSelection">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label for="sovereigntyConsent" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="sovereigntyConsent" style="width: auto; padding: 0;" />
+                    <span>I consent to constitutional sovereignty requirements (σ = 1.0)</span>
+                </label>
+            </div>
+
+            <button onclick="registerNode()">▶ Register Node</button>
+        </div>
+
+        <div class="registry-section">
+            <h2>Active Node Registry</h2>
+            <table class="registry-table">
+                <thead>
+                    <tr>
+                        <th>Node Name</th>
+                        <th>Address</th>
+                        <th>Tier</th>
+                        <th>Allocation (tokens)</th>
+                        <th>Status</th>
+                        <th>Registration Date</th>
+                    </tr>
+                </thead>
+                <tbody id="registryBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #888;">Register a node to add to the network...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary-section">
+            <h2>Network Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Registered Nodes</div>
+                    <div class="summary-value" id="registeredCount">0</div>
+                    <div class="summary-unit">total participants</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Total Allocated</div>
+                    <div class="summary-value" id="totalAllocated">0</div>
+                    <div class="summary-unit">tokens assigned</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Pending Activation</div>
+                    <div class="summary-value" id="pendingCount">0</div>
+                    <div class="summary-unit">awaiting consensus</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Supply Allocated</div>
+                    <div class="summary-value" id="supplyPercent">0%</div>
+                    <div class="summary-unit">of 21B total</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 4px; border-left: 2px solid #d4a84b;">
+                <div style="font-family: 'Space Mono', monospace; font-size: 0.85rem; color: #888; margin-bottom: 0.5rem;">NETWORK STATUS</div>
+                <div style="font-size: 1.1rem; font-weight: 700; color: #f0ddb0;" id="networkStatus">Waiting for registrations...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FIBONACCI_TIERS = [
+            { tier: 1, name: 'F01', allocation: 5_023_923, group: 'Genesis' },
+            { tier: 2, name: 'F02', allocation: 5_023_923, group: 'Foundation' },
+            { tier: 3, name: 'F03', allocation: 10_047_846, group: 'Early Recognition' },
+            { tier: 4, name: 'F04', allocation: 15_071_770, group: 'Recognition' },
+            { tier: 5, name: 'F05', allocation: 25_119_617, group: 'Growth' },
+            { tier: 6, name: 'F06', allocation: 40_191_387, group: 'Expansion' },
+            { tier: 7, name: 'F07', allocation: 65_311_004, group: 'Integration' },
+            { tier: 8, name: 'F08', allocation: 105_502_392, group: 'Cascade' },
+            { tier: 9, name: 'F09', allocation: 170_813_397, group: 'Network' },
+            { tier: 10, name: 'F10', allocation: 276_315_789, group: 'TCMF' },
+            { tier: 11, name: 'F11', allocation: 447_129_186, group: 'Distributed' },
+            { tier: 12, name: 'F12', allocation: 723_444_976, group: 'Extended' },
+            { tier: 13, name: 'F13', allocation: 1_170_574_162, group: 'Finalization' },
+            { tier: 14, name: 'F14', allocation: 1_894_019_138, group: 'Galactic' },
+            { tier: 15, name: 'F15', allocation: 3_064_593_301, group: 'Federation' },
+            { tier: 16, name: 'F16', allocation: 4_958_612_440, group: 'Expansion' },
+            { tier: 17, name: 'F17', allocation: 8_023_205_749, group: 'Summit' }
+        ];
+
+        let registeredNodes = [];
+        let selectedTier = null;
+
+        // Set today's date
+        document.getElementById('registrationDate').valueAsDate = new Date();
+
+        function initTierSelection() {
+            const container = document.getElementById('tierSelection');
+            container.innerHTML = FIBONACCI_TIERS.map((tier, i) => `
+                <button type="button" class="tier-button" onclick="selectTier(${i})">
+                    ${tier.name}
+                    <div class="tier-info">${tier.allocation.toLocaleString()} tokens</div>
+                </button>
+            `).join('');
+        }
+
+        function selectTier(index) {
+            selectedTier = index;
+            const buttons = document.querySelectorAll('.tier-button');
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('selected', i === index);
+            });
+        }
+
+        function registerNode() {
+            const nodeName = document.getElementById('nodeName').value;
+            const nodeAddress = document.getElementById('nodeAddress').value;
+            const operatorEmail = document.getElementById('operatorEmail').value;
+            const registrationDate = document.getElementById('registrationDate').value;
+            const sovereigntyConsent = document.getElementById('sovereigntyConsent').checked;
+
+            if (!nodeName || !nodeAddress || selectedTier === null) {
+                alert('Please fill in all required fields and select a tier');
+                return;
+            }
+
+            if (!sovereigntyConsent) {
+                alert('You must consent to constitutional sovereignty requirements');
+                return;
+            }
+
+            const tier = FIBONACCI_TIERS[selectedTier];
+
+            const node = {
+                name: nodeName,
+                address: nodeAddress.substring(0, 10) + '...' + nodeAddress.substring(-8),
+                email: operatorEmail,
+                tier: tier.name,
+                allocation: tier.allocation,
+                date: new Date(registrationDate).toLocaleDateString(),
+                status: 'Pending Activation'
+            };
+
+            registeredNodes.push(node);
+            updateRegistry();
+            resetForm();
+        }
+
+        function updateRegistry() {
+            const tbody = document.getElementById('registryBody');
+
+            if (registeredNodes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #888;">Register a node to add to the network...</td></tr>';
+                updateSummary();
+                return;
+            }
+
+            tbody.innerHTML = registeredNodes.map((node, i) => `
+                <tr>
+                    <td>${node.name}</td>
+                    <td>${node.address}</td>
+                    <td><span class="tier-badge">${node.tier}</span></td>
+                    <td>${node.allocation.toLocaleString()}</td>
+                    <td><span class="status-pending">${node.status}</span></td>
+                    <td>${node.date}</td>
+                </tr>
+            `).join('');
+
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const totalAlloc = registeredNodes.reduce((sum, node) => sum + node.allocation, 0);
+            const supplyPercent = ((totalAlloc / 21_000_000_000) * 100).toFixed(4);
+
+            document.getElementById('registeredCount').textContent = registeredNodes.length;
+            document.getElementById('totalAllocated').textContent = (totalAlloc / 1_000_000_000).toFixed(3) + 'B';
+            document.getElementById('pendingCount').textContent = registeredNodes.filter(n => n.status === 'Pending Activation').length;
+            document.getElementById('supplyPercent').textContent = supplyPercent + '%';
+
+            const status = registeredNodes.length === 0 ? 'No registrations' :
+                          registeredNodes.length < 10 ? `${registeredNodes.length} nodes registered` :
+                          `${registeredNodes.length} nodes active - Network growing`;
+
+            document.getElementById('networkStatus').textContent = status;
+        }
+
+        function resetForm() {
+            document.getElementById('nodeName').value = '';
+            document.getElementById('nodeAddress').value = '';
+            document.getElementById('operatorEmail').value = '';
+            document.getElementById('sovereigntyConsent').checked = false;
+            selectedTier = null;
+            const buttons = document.querySelectorAll('.tier-button');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+        }
+
+        // Initialize
+        initTierSelection();
+        updateRegistry();
+    </script>
+</body>
+</html>

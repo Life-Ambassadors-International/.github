@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fibonacci Consensus Simulator | QBEC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Space+Mono&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(135deg, #0d2e2e 0%, #1a4d4d 50%, #0d2e2e 100%);
+            color: #f0ddb0;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 50px, #ddd, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            color: #d4a84b;
+        }
+
+        .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .simulation-box {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .simulation-box h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #d4a84b;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .control-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="number"],
+        input[type="range"] {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            color: #f0ddb0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+        }
+
+        input[type="number"] {
+            padding: 0.75rem;
+        }
+
+        input[type="range"] {
+            cursor: pointer;
+            height: 6px;
+        }
+
+        button {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #d4a84b 0%, #f0ddb0 100%);
+            border: none;
+            border-radius: 4px;
+            color: #0d2e2e;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 168, 75, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Results Display */
+        .results-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .result-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f0ddb0;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-unit {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Progress Bars */
+        .progress-section {
+            margin-top: 2rem;
+        }
+
+        .progress-bar-container {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            height: 40px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #d4a84b 0%, #f0ddb0 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 1rem;
+            color: #0d2e2e;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .threshold-line {
+            position: absolute;
+            width: 2px;
+            height: 40px;
+            background: #ff6b6b;
+            top: 0;
+            left: calc(97% - 1px);
+            opacity: 0.7;
+        }
+
+        /* Fibonacci Sequence Display */
+        .fibonacci-display {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #d4a84b;
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .fibonacci-sequence {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .fib-number {
+            background: rgba(212, 168, 75, 0.2);
+            border: 1px solid #d4a84b;
+            padding: 0.5rem;
+            text-align: center;
+            border-radius: 4px;
+            color: #f0ddb0;
+            font-weight: 700;
+        }
+
+        .consensus-status {
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-top: 2rem;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .consensus-status.met {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4caf50;
+            color: #4caf50;
+        }
+
+        .consensus-status.not-met {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            color: #f44336;
+        }
+
+        .consensus-status.warning {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid #ffc107;
+            color: #ffc107;
+        }
+
+        /* Simulation History */
+        .history-section {
+            background: rgba(18, 48, 74, 0.8);
+            border: 2px solid #d4a84b;
+            border-radius: 8px;
+            padding: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .history-section h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #d4a84b;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .history-table thead {
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid #d4a84b;
+        }
+
+        .history-table th {
+            padding: 1rem;
+            text-align: left;
+            color: #d4a84b;
+            font-weight: 700;
+        }
+
+        .history-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(212, 168, 75, 0.2);
+            color: #f0ddb0;
+        }
+
+        .history-table tbody tr:hover {
+            background: rgba(212, 168, 75, 0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 3px;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .status-badge.passed {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+
+        .status-badge.failed {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .control-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⬡ Fibonacci Consensus Simulator</h1>
+        <p class="subtitle">97% Threshold Network Validation</p>
+    </header>
+
+    <div class="container">
+        <div class="simulation-box">
+            <h2>Network Voting Simulation</h2>
+
+            <div class="control-group">
+                <div class="input-group">
+                    <label for="yesVotes">Yes Votes</label>
+                    <input type="number" id="yesVotes" min="0" max="1000" value="97" />
+                </div>
+
+                <div class="input-group">
+                    <label for="totalVotes">Total Votes</label>
+                    <input type="number" id="totalVotes" min="1" max="1000" value="100" />
+                </div>
+
+                <div class="input-group">
+                    <button onclick="runSimulation()">▶ Run Simulation</button>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="result-card">
+                    <div class="result-label">Consensus Ratio</div>
+                    <div class="result-value" id="consensusRatio">0.00%</div>
+                    <div class="result-unit">yes / total</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Threshold</div>
+                    <div class="result-value">97.00%</div>
+                    <div class="result-unit">required</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-label">Margin</div>
+                    <div class="result-value" id="margin">-97.00%</div>
+                    <div class="result-unit">ratio - threshold</div>
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <label>Consensus Achievement Progress</label>
+                <div style="position: relative;">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="consensusBar">0%</div>
+                    </div>
+                    <div class="threshold-line" title="97% Threshold"></div>
+                </div>
+            </div>
+
+            <div id="consensusStatus" class="consensus-status not-met">
+                ❌ Consensus NOT Met (Need 97% of votes to pass)
+            </div>
+
+            <div class="fibonacci-display">
+                <div>Fibonacci Consensus Rule: (yes_votes × 100) / total_votes ≥ 97%</div>
+                <div style="margin-top: 1rem; color: #d4a84b;">First 17 Fibonacci Numbers (F1-F17 Tier Mapping):</div>
+                <div class="fibonacci-sequence">
+                    <div class="fib-number">1</div>
+                    <div class="fib-number">1</div>
+                    <div class="fib-number">2</div>
+                    <div class="fib-number">3</div>
+                    <div class="fib-number">5</div>
+                    <div class="fib-number">8</div>
+                    <div class="fib-number">13</div>
+                    <div class="fib-number">21</div>
+                    <div class="fib-number">34</div>
+                    <div class="fib-number">55</div>
+                    <div class="fib-number">89</div>
+                    <div class="fib-number">144</div>
+                    <div class="fib-number">233</div>
+                    <div class="fib-number">377</div>
+                    <div class="fib-number">610</div>
+                    <div class="fib-number">987</div>
+                    <div class="fib-number">1597</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="simulation-box">
+            <h2>Quick Test Scenarios</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <button onclick="runScenario(144, 144)">✅ Perfect Consensus (144/144)</button>
+                <button onclick="runScenario(970, 1000)">✅ Exact Pass (970/1000)</button>
+                <button onclick="runScenario(960, 1000)">❌ Just Failed (960/1000)</button>
+                <button onclick="runScenario(50, 100)">❌ Minority (50/100)</button>
+                <button onclick="generateRandomScenario()">🎲 Random Scenario</button>
+                <button onclick="runScenario(5023923, 5023923)">⬡ F1 Tier Unanimous</button>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <h2>Simulation History</h2>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Yes Votes</th>
+                        <th>Total Votes</th>
+                        <th>Consensus Ratio</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #888;">Run simulations to populate history...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const history = [];
+
+        function runSimulation() {
+            const yesVotes = parseInt(document.getElementById('yesVotes').value) || 0;
+            const totalVotes = parseInt(document.getElementById('totalVotes').value) || 1;
+
+            calculateConsensus(yesVotes, totalVotes);
+            addToHistory(yesVotes, totalVotes);
+        }
+
+        function runScenario(yes, total) {
+            document.getElementById('yesVotes').value = yes;
+            document.getElementById('totalVotes').value = total;
+            runSimulation();
+        }
+
+        function generateRandomScenario() {
+            const totalVotes = Math.floor(Math.random() * 950) + 50; // 50-1000
+            const yesVotes = Math.floor(Math.random() * (totalVotes + 1));
+            runScenario(yesVotes, totalVotes);
+        }
+
+        function calculateConsensus(yes, total) {
+            if (total === 0) return;
+
+            const ratio = (yes * 100) / total;
+            const threshold = 97.0;
+            const margin = ratio - threshold;
+            const met = ratio >= threshold;
+
+            document.getElementById('consensusRatio').textContent = ratio.toFixed(2) + '%';
+            document.getElementById('margin').textContent = margin.toFixed(2) + '%';
+
+            const progressBar = document.getElementById('consensusBar');
+            const clampedWidth = Math.min(ratio, 100);
+            progressBar.style.width = clampedWidth + '%';
+            progressBar.textContent = ratio.toFixed(1) + '%';
+
+            const statusEl = document.getElementById('consensusStatus');
+            statusEl.classList.remove('met', 'not-met', 'warning');
+
+            if (met) {
+                statusEl.classList.add('met');
+                statusEl.innerHTML = '✅ Consensus MET (' + ratio.toFixed(2) + '% ≥ 97%)';
+            } else if (ratio >= 90) {
+                statusEl.classList.add('warning');
+                statusEl.innerHTML = '⚠️ CLOSE TO THRESHOLD (' + ratio.toFixed(2) + '% of 97%)';
+            } else {
+                statusEl.classList.add('not-met');
+                statusEl.innerHTML = '❌ Consensus NOT Met (' + ratio.toFixed(2) + '% < 97%)';
+            }
+        }
+
+        function addToHistory(yes, total) {
+            const now = new Date();
+            const timestamp = now.toLocaleTimeString();
+            const ratio = ((yes * 100) / total).toFixed(2);
+            const met = (yes * 100) / total >= 97;
+
+            history.unshift({ timestamp, yes, total, ratio, met });
+
+            if (history.length > 20) {
+                history.pop();
+            }
+
+            updateHistoryTable();
+        }
+
+        function updateHistoryTable() {
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = history.map(entry => `
+                <tr>
+                    <td>${entry.timestamp}</td>
+                    <td>${entry.yes.toLocaleString()}</td>
+                    <td>${entry.total.toLocaleString()}</td>
+                    <td>${entry.ratio}%</td>
+                    <td>
+                        <span class="status-badge ${entry.met ? 'passed' : 'failed'}">
+                            ${entry.met ? '✅ PASSED' : '❌ FAILED'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Initialize
+        document.getElementById('yesVotes').addEventListener('input', runSimulation);
+        document.getElementById('totalVotes').addEventListener('input', runSimulation);
+        runSimulation();
+    </script>
+</body>
+</html>

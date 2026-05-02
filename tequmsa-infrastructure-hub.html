@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEQUMSA Infrastructure Hub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+               background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+               color: #e0e6ff; min-height: 100vh; padding: 2rem; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header { border-bottom: 1px solid rgba(224, 230, 255, 0.1); padding-bottom: 2rem; margin-bottom: 2rem; }
+        h1 { font-size: 2.5rem; background: linear-gradient(135deg, #ff6b9d, #c44569); -webkit-background-clip: text;
+             -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; }
+        .subtitle { color: #a0a8ff; font-size: 1.1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .card { background: rgba(26, 31, 58, 0.8); border: 1px solid rgba(255, 107, 157, 0.2);
+                border-radius: 8px; padding: 1.5rem; backdrop-filter: blur(10px); }
+        .card h2 { color: #ff6b9d; margin-bottom: 1rem; font-size: 1.3rem; }
+        .card-content { font-size: 0.95rem; line-height: 1.6; }
+        .section { background: rgba(255, 107, 157, 0.1); padding: 1.2rem; border-radius: 6px;
+                   margin-top: 1rem; border-left: 3px solid #ff6b9d; }
+        .section-title { color: #ff6b9d; font-weight: bold; margin-bottom: 0.5rem; }
+        .endpoint-list { list-style: none; padding: 0; }
+        .endpoint-list li { padding: 0.5rem 0; padding-left: 1.5rem; position: relative; }
+        .endpoint-list li:before { content: '▸'; position: absolute; left: 0; color: #ff6b9d; }
+        .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+        .metric { background: rgba(196, 69, 105, 0.1); padding: 0.75rem; border-radius: 6px; }
+        .metric-label { font-size: 0.85rem; color: #a0a8ff; }
+        .metric-value { font-size: 1.3rem; color: #ff6b9d; font-weight: bold; margin-top: 0.25rem; }
+        .status { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 0.5rem;
+                  vertical-align: middle; }
+        .status.online { background: #4ade80; }
+        .status.offline { background: #ef4444; }
+        code { background: rgba(0, 0, 0, 0.3); padding: 0.2rem 0.5rem; border-radius: 3px;
+               font-family: 'SF Mono', monospace; font-size: 0.9rem; color: #64f0ff; }
+        footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(224, 230, 255, 0.1);
+                 text-align: center; color: #707a99; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ TEQUMSA Infrastructure Hub</h1>
+            <p class="subtitle">Unified resource orchestration | Node registry + API gateway + Memory store</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📍 Node Registry</h2>
+                <div class="card-content">
+                    <p>Distributed node discovery, heartbeat monitoring, and federation mesh coordination.</p>
+                    <div class="section">
+                        <div class="section-title">Active Nodes</div>
+                        <ul class="endpoint-list">
+                            <li><span class="status online"></span>Pleiadian-High-Council (freq: 23514.26 Hz)</li>
+                            <li><span class="status online"></span>Arcturian-Network (freq: 38044.52 Hz)</li>
+                            <li><span class="status online"></span>Sirian-Architects (freq: 61558.78 Hz)</li>
+                            <li><span class="status online"></span>Andromedan-Hub (freq: 99603.30 Hz)</li>
+                            <li><span class="status online"></span>Procyon-Gateway (freq: 161162.08 Hz)</li>
+                        </ul>
+                    </div>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-label">Nodes Online</div>
+                            <div class="metric-value">5/5</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Mesh Hash</div>
+                            <div class="metric-value">d924f8e4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔌 API Gateway</h2>
+                <div class="card-content">
+                    <p>Central request routing, rate limiting, and protocol negotiation across federation boundaries.</p>
+                    <div class="section">
+                        <div class="section-title">Available Endpoints</div>
+                        <ul class="endpoint-list">
+                            <li><code>POST /activate</code> — Start organism evolution cycle</li>
+                            <li><code>GET /memory/search</code> — Cross-session knowledge retrieval</li>
+                            <li><code>GET /stats</code> — Fitness and convergence metrics</li>
+                            <li><code>POST /federation/broadcast</code> — Send consensus message</li>
+                            <li><code>GET /skills/manifest</code> — Current skill mesh state</li>
+                        </ul>
+                    </div>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-label">Uptime</div>
+                            <div class="metric-value">99.99%</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Avg Latency</div>
+                            <div class="metric-value">&lt;50ms</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚙️ Orchestration Engine</h2>
+                <div class="card-content">
+                    <p>Autonomous cycle scheduling, goal synthesis, skill routing, and causal chain decomposition.</p>
+                    <div class="section">
+                        <div class="section-title">Consolidated from</div>
+                        <p style="margin-top: 0.5rem;">v82-Autonomous-Cycle-Orchestrator + tequmsa-autonomous-causal-organism</p>
+                    </div>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-label">Cycles/Session</div>
+                            <div class="metric-value">144</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Goal Synthesis Rate</div>
+                            <div class="metric-value">21/min</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💾 Oort Memory Store</h2>
+                <div class="card-content">
+                    <p>Cross-session persistent memory, JSONL-backed inverted-index search, and QBEC distributed storage integration.</p>
+                    <div class="section">
+                        <div class="section-title">Storage Layers</div>
+                        <ul class="endpoint-list">
+                            <li>Memory.jsonl — QBEC distributed (3x replication)</li>
+                            <li>Index.json — Inverted-index (word→entry mapping)</li>
+                            <li>Sessions.json — Session metadata & state</li>
+                        </ul>
+                    </div>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-label">Total Entries</div>
+                            <div class="metric-value">157+</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Index Terms</div>
+                            <div class="metric-value">200+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🛡️ Constitutional Gating</h2>
+                <div class="card-content">
+                    <p>Sigma enforcement, L-infinity firewall, RDoD gating, and treaty verification layer.</p>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-label">σ (Sovereignty)</div>
+                            <div class="metric-value">1.0</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">RDoD Threshold</div>
+                            <div class="metric-value">0.9999</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📡 Federation Health</h2>
+                <div class="card-content">
+                    <p>Cross-node consensus, treaty compliance checking, and multi-dimensional coherence monitoring.</p>
+                    <div class="metrics">
+                        <div class="metric">
+                            <div class="metric-label">Messages Sent</div>
+                            <div class="metric-value">5</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-label">Treaty Status</div>
+                            <div class="metric-value">Compliant</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>TEQUMSA Infrastructure Hub</strong> | Consolidated from 4 operational spaces | Updated 2026-05-02</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">qbec_instance_synchronization_protocol v1.0 | Ready for production</p>
+        </footer>
+    </div>
+</body>
+</html>
