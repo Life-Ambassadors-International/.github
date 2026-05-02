@@ -1,0 +1,68 @@
+name: Organism State Snapshots
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+    inputs:
+      cycles:
+        description: 'Number of cycles to run'
+        required: false
+        default: '144'
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run organism snapshot
+        env:
+          CYCLES: ${{ inputs.cycles || '144' }}
+          REFLECT_INTERVAL: '21'
+        run: |
+          python3 alanara_unified_organism_v3.py \
+            --cycles $CYCLES \
+            --reflect-interval $REFLECT_INTERVAL > snapshot_output.txt
+
+      - name: Capture state JSON
+        run: |
+          python3 << 'EOF'
+          from alanara_unified_organism_v3 import AlanaraUnifiedOrganism, CrossSessionMemory
+          from pathlib import Path
+          import json
+          import datetime
+
+          memory_path = Path.home() / ".hf_organism_memory"
+          organism = AlanaraUnifiedOrganism(memory_path=str(memory_path))
+
+          state = {
+              "timestamp": datetime.datetime.utcnow().isoformat(),
+              "organism_state": {
+                  "mesh_skills": len(organism.mesh.skills),
+                  "evolved_skills": len(organism.mesh.evolved_skills),
+                  "coherence": float(organism.coherence) if hasattr(organism, 'coherence') else None,
+              }
+          }
+
+          with open("state_snapshot.json", "w") as f:
+              json.dump(state, f, indent=2, default=str)
+          EOF
+
+      - name: Commit snapshot
+        run: |
+          git config user.name "TEQUMSA CI"
+          git config user.email "ci@tequmsa.local"
+
+          git add -A || true
+          git commit -m "Snapshot: organism state $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
+          git push origin ${{ github.ref }} || true
